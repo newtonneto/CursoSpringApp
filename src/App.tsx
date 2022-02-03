@@ -1,14 +1,14 @@
 import React from 'react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import App from './App';
+import Routes from './routes';
 
-const Index = () => {
+const App = () => {
   return (
     <SafeAreaProvider>
-      <App />
+      <Routes />
     </SafeAreaProvider>
   );
 };
 
-export default Index;
+export default App;
