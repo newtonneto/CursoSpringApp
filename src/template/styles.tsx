@@ -23,3 +23,9 @@ export const ScrollView = styled.ScrollView.attrs({
   flex: 1;
   width: 100%;
 `;
+
+export const FlatList = styled.FlatList.attrs({
+  showsVerticalScrollIndicator: false,
+})`
+  flex: 1;
+`;

@@ -6,6 +6,7 @@ import AppRoutes from './app.routes';
 
 export type RootStackParamList = {
   SignIn: undefined;
+  AppRoutes: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

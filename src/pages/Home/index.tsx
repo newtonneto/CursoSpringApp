@@ -1,11 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
+
+import { KeyboardAvoidingView, ScrollView } from '../../template/styles';
 
 const Home = () => {
   return (
-    <View>
-      <Text>aaaa</Text>
-    </View>
+    <KeyboardAvoidingView>
+      <ScrollView>
+        <Text>aaaa</Text>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
