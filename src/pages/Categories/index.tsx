@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { ListRenderItem } from 'react-native';
+import { ListRenderItem, FlatList } from 'react-native';
 import { Card } from 'react-native-elements';
 
-import { SafeAreaView, FlatList } from '../../template/styles';
+import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
 import { findAll } from '../../service/domain/categoria';
 
