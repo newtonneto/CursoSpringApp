@@ -65,7 +65,8 @@ const SignIn = ({ navigation }: Props) => {
     } catch (err) {
       const error: ErrorTemplate = err as ErrorTemplate;
 
-      Alert.alert(error.status, error.message);
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('err: ', err);
     } finally {
       if (!isMounted.current) {
         return;
@@ -76,7 +77,7 @@ const SignIn = ({ navigation }: Props) => {
 
   return (
     <KeyboardAvoidingView>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <ScrollView contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="always">
         <Title>Sistema de pedidos</Title>
         <Image
           source={logo}
