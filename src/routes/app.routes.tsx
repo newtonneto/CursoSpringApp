@@ -10,7 +10,7 @@ const AppRoutes = () => {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Categories" component={Categories} />
+      <Drawer.Screen name="Categorias" component={Categories} />
     </Drawer.Navigator>
   );
 };

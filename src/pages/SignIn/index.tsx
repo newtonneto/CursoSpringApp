@@ -10,6 +10,7 @@ import { KeyboardAvoidingView, ScrollView } from '../../template/styles';
 import logo from '../../assets/logo.png';
 import colors from '../../template/colors';
 import { RootStackParamList } from '../../routes';
+import auth from '../../service/auth';
 
 const emailRef = createRef<any>();
 const passwordRef = createRef<any>();
@@ -32,7 +33,22 @@ const SignIn = ({ navigation }: Props) => {
   useEffect(() => {
     register('email', { required: true });
     register('password', { required: true });
+
+    login();
   }, [register]);
+
+  async function login() {
+    try {
+      const credentials = {
+        email: 'solid.snake@gmail.com',
+        senha: 'batata',
+      };
+
+      await auth.post('login', credentials);
+    } catch (err) {
+      console.log('login: ', err);
+    }
+  }
 
   return (
     <KeyboardAvoidingView>
