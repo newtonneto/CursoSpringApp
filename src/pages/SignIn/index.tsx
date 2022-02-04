@@ -2,7 +2,7 @@
 import React, { useEffect, createRef } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { Button, Input, Image } from 'react-native-elements';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Title } from './styles';
@@ -17,38 +17,36 @@ const passwordRef = createRef<any>();
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
 const SignIn = ({ navigation }: Props) => {
   const {
     register,
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const onSubmit = (data: any) => {
-    console.log('data: ', data);
-    navigation.navigate('AppRoutes');
-  };
-
-  useEffect(() => {
-    register('email', { required: true });
-    register('password', { required: true });
-
-    login();
-  }, [register]);
-
-  async function login() {
+  const onSubmit: SubmitHandler<FormData> = async formData => {
     try {
       const credentials = {
-        email: 'solid.snake@gmail.com',
-        senha: 'batata',
+        email: formData.email,
+        senha: formData.password,
       };
 
       await auth.post('login', credentials);
     } catch (err) {
       console.log('login: ', err);
     }
-  }
+  };
+
+  useEffect(() => {
+    register('email', { required: true });
+    register('password', { required: true });
+  }, [register]);
 
   return (
     <KeyboardAvoidingView>
@@ -133,6 +131,7 @@ const SignIn = ({ navigation }: Props) => {
             height: 50,
             width: '95%',
           }}
+          onPress={() => navigation.navigate('SignUp')}
         />
       </ScrollView>
     </KeyboardAvoidingView>
