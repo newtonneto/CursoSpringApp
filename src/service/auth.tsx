@@ -1,15 +1,8 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
+import { ErrorTemplate } from '../models/error';
 interface ApiHandler {
   post<T, U>(url: string, payload: T): Promise<AxiosResponse<U>>;
-}
-
-interface Error {
-  error: string;
-  message: string;
-  path: string;
-  status: string;
-  timestamp: string;
 }
 
 const client = axios.create({
@@ -23,20 +16,20 @@ const auth: ApiHandler = {
 };
 
 client.interceptors.request.use(
-  function (config) {
+  function (config): AxiosRequestConfig<any> {
     return config;
   },
-  function (error) {
+  function (error): Promise<any> {
     return Promise.reject(error);
   },
 );
 
 client.interceptors.response.use(
-  function (response) {
-    return response;
+  function ({ headers }): string {
+    return headers.authorization;
   },
-  function ({ response }) {
-    let error: Error = response.data;
+  function ({ response }): Promise<ErrorTemplate> {
+    let error: ErrorTemplate = response.data;
 
     return Promise.reject(error);
   },

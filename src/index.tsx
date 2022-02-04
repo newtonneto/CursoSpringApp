@@ -4,6 +4,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
 import App from './App';
+import AppProvider from './hooks';
 
 const Index = () => {
   LogBox.ignoreLogs([
@@ -12,7 +13,9 @@ const Index = () => {
 
   return (
     <NavigationContainer>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </NavigationContainer>
   );
 };

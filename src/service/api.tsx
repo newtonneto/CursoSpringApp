@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
+import { ErrorTemplate } from '../models/error';
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
   post<T, U>(url: string, payload: T): Promise<AxiosResponse<U>>;
@@ -24,7 +25,7 @@ client.interceptors.response.use(
     return response;
   },
   function ({ response }) {
-    let error: Error = response.data;
+    let error: ErrorTemplate = response.data;
 
     return Promise.reject(error);
   },

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, createRef } from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useEffect, createRef, useState, useRef } from 'react';
+import { ActivityIndicator, Alert } from 'react-native';
 import { Button, Input, Image } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,6 +11,8 @@ import logo from '../../assets/logo.png';
 import colors from '../../template/colors';
 import { RootStackParamList } from '../../routes';
 import auth from '../../service/auth';
+import { UseAuth } from '../../hooks/authProvider';
+import { ErrorTemplate } from '../../models/error';
 
 const emailRef = createRef<any>();
 const passwordRef = createRef<any>();
@@ -29,24 +31,48 @@ const SignIn = ({ navigation }: Props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
+  const { handlerToken } = UseAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const isMounted = useRef<boolean>(true);
+
+  useEffect(() => {
+    register('email', { required: true });
+    register('password', { required: true });
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, [register]);
 
   const onSubmit: SubmitHandler<FormData> = async formData => {
+    if (!isMounted.current) {
+      return;
+    }
+    setLoading(true);
+
     try {
       const credentials = {
         email: formData.email,
         senha: formData.password,
       };
 
-      await auth.post('login', credentials);
+      const jwt: any = await auth.post('login', credentials);
+
+      console.log('jwt: ', jwt);
+      await handlerToken(jwt);
+
+      navigation.navigate('AppRoutes');
     } catch (err) {
-      console.log('login: ', err);
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(error.status, error.message);
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    register('email', { required: true });
-    register('password', { required: true });
-  }, [register]);
 
   return (
     <KeyboardAvoidingView>
@@ -106,15 +132,15 @@ const SignIn = ({ navigation }: Props) => {
         {errors.password && errors.password.type && passwordRef.current.shake()}
         <Button
           title="ENTRAR"
-          loading={false}
+          loading={loading}
+          disabled={loading}
           loadingProps={{ size: 'small', color: 'white' }}
           buttonStyle={{
             backgroundColor: colors.success,
             borderRadius: 5,
           }}
-          titleStyle={{ fontWeight: 'bold', fontSize: 23 }}
+          titleStyle={{ fontWeight: 'bold' }}
           containerStyle={{
-            height: 50,
             width: '95%',
             marginVertical: 10,
           }}
@@ -122,13 +148,13 @@ const SignIn = ({ navigation }: Props) => {
         />
         <Button
           title="REGISTRAR"
+          disabled={loading}
           buttonStyle={{
             borderColor: colors.text,
           }}
           type="outline"
           titleStyle={{ color: colors.text }}
           containerStyle={{
-            height: 50,
             width: '95%',
           }}
           onPress={() => navigation.navigate('SignUp')}
