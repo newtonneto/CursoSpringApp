@@ -58,10 +58,7 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
 
       const jwt: any = await auth.post('login', credentials);
 
-      console.log('jwt: ', jwt);
       await handlerToken(jwt);
-
-      // navigation.navigate('AppRoutes');
     } catch (err) {
       const error: ErrorTemplate = err as ErrorTemplate;
 

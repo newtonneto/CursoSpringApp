@@ -72,12 +72,19 @@ const AuthProvider = ({ children }: Props) => {
         ['@csa:jwt', extracted_token],
         ['@csa:email', decoded_token.sub],
       ]);
+
+      if (!isMounted.current) {
+        return;
+      }
+      setToken(extracted_token);
+      if (!isMounted.current) {
+        return;
+      }
+      setEmail(decoded_token.sub);
     }
   }, []);
 
   const logout = async (): Promise<void> => {
-    console.log('HAUSHAUHSUAHSUA');
-
     const keys: string[] = await AsyncStorage.getAllKeys();
     await AsyncStorage.multiRemove(keys);
 
