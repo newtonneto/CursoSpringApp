@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text } from 'react-native';
+import axios from 'axios';
+import { Avatar, Text } from 'react-native-elements';
 
+import { AvatarContainer } from './styles';
 import { SafeAreaView, ScrollView } from '../../template/styles';
 import { UseAuth } from '../../hooks/authProvider';
 import { getByEmail } from '../../service/domain/cliente';
 import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
+import blank from '../../assets/avatar-blank.png';
+import colors from '../../template/colors';
 
 const Profile = (): React.ReactElement => {
   const [user, setUser] = useState<ClienteDTO | null>({} as ClienteDTO);
@@ -25,6 +29,8 @@ const Profile = (): React.ReactElement => {
         return;
       }
       setLoading(false);
+
+      await getUserImage(data?.id);
     };
 
     getUserData();
@@ -35,15 +41,37 @@ const Profile = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getUserImage = async (id: string | undefined) => {
+    try {
+      await axios.get(
+        `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,
+      );
+
+      setUser(prevState => ({
+        ...(prevState as ClienteDTO),
+        imageUrl: `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,
+      }));
+    } catch (err) {
+      console.log('getUserImage: ', err);
+    }
+  };
+
   return (
     <SafeAreaView>
       <ScrollView>
         {loading ? (
           <Loader />
         ) : (
-          <View>
-            <Text>{user?.email}</Text>
-          </View>
+          <AvatarContainer>
+            <Avatar
+              size={120}
+              rounded
+              source={user?.imageUrl ? { uri: user?.imageUrl } : blank}
+            />
+            <Text h3 h3Style={{ color: colors.primary, marginLeft: 16 }}>
+              {user?.nome}
+            </Text>
+          </AvatarContainer>
         )}
       </ScrollView>
     </SafeAreaView>
