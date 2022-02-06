@@ -24,7 +24,7 @@ interface FormData {
   password: string;
 }
 
-const SignIn = ({ navigation }: Props) => {
+const SignIn = ({ navigation }: Props): React.ReactElement => {
   const {
     register,
     setValue,
@@ -66,7 +66,7 @@ const SignIn = ({ navigation }: Props) => {
       const error: ErrorTemplate = err as ErrorTemplate;
 
       Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('err: ', err);
+      console.log('onSubmit: ', err);
     } finally {
       if (!isMounted.current) {
         return;
@@ -77,7 +77,9 @@ const SignIn = ({ navigation }: Props) => {
 
   return (
     <KeyboardAvoidingView>
-      <ScrollView contentInsetAdjustmentBehavior="automatic" keyboardShouldPersistTaps="always">
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="always">
         <Title>Sistema de pedidos</Title>
         <Image
           source={logo}

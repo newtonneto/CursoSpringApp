@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { KeyboardAvoidingView, ScrollView } from '../../template/styles';
 
-const Home = () => {
+const Home = (): React.ReactElement => {
   return (
     <KeyboardAvoidingView>
       <ScrollView>

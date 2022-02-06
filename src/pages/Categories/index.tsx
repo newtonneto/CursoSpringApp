@@ -35,8 +35,8 @@ const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   </ListItem>
 );
 
-function Categories() {
-  const [categories, setCategories] = useState<CategoriaDTO[]>([]);
+const Categories = (): React.ReactElement => {
+  const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function Categories() {
     if (!isMounted.current) {
       return;
     }
-    setCategories(list || []);
+    setCategories(list);
   }
 
   return (
@@ -65,6 +65,6 @@ function Categories() {
       />
     </SafeAreaView>
   );
-}
+};
 
 export default Categories;

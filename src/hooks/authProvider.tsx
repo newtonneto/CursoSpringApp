@@ -7,6 +7,7 @@ import React, {
   useCallback,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from 'jwt-decode';
 
 type Props = {
   children: React.ReactNode;
@@ -15,7 +16,14 @@ type Props = {
 type ReturnContext = {
   token: string;
   setToken: Function;
+  email: string;
   handlerToken: Function;
+  logout: Function;
+};
+
+type Token = {
+  sub: string;
+  exp: string;
 };
 
 //const AuthContext = createContext<ReturnContext>({} as ReturnContext);
@@ -23,17 +31,25 @@ const AuthContext = createContext<ReturnContext | undefined>(undefined);
 
 const AuthProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
     const loadStorageData = async () => {
-      const jwt: string | null = await AsyncStorage.getItem('@csa:jwt');
+      const saved_token: string | null = await AsyncStorage.getItem('@csa:jwt');
+      const saved_email: string | null = await AsyncStorage.getItem(
+        '@csa:email',
+      );
 
-      if (jwt) {
+      if (saved_token && saved_email) {
         if (!isMounted.current) {
           return;
         }
-        setToken(jwt[1]);
+        setToken(saved_token);
+        if (!isMounted.current) {
+          return;
+        }
+        setEmail(saved_email);
       }
     };
 
@@ -45,11 +61,28 @@ const AuthProvider = ({ children }: Props) => {
   }, []);
 
   const handlerToken = useCallback(async (jwt): Promise<void> => {
-    await AsyncStorage.setItem('@csa:jwt', jwt);
+    if (jwt === null) {
+      await AsyncStorage.removeItem('@csa:jwt');
+      await AsyncStorage.removeItem('@csa:email');
+    } else {
+      const extracted_token = jwt.substring(7);
+      const decoded_token: Token = jwt_decode(extracted_token);
+
+      await AsyncStorage.multiSet([
+        ['@csa:jwt', extracted_token],
+        ['@csa:email', decoded_token.sub],
+      ]);
+    }
   }, []);
 
+  const logout = async (): Promise<void> => {
+    const keys: string[] = await AsyncStorage.getAllKeys();
+    await AsyncStorage.multiRemove(keys);
+  };
+
   return (
-    <AuthContext.Provider value={{ token, setToken, handlerToken }}>
+    <AuthContext.Provider
+      value={{ token, setToken, email, handlerToken, logout }}>
       {children}
     </AuthContext.Provider>
   );

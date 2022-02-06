@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { SafeAreaView } from '../../template/styles';
 
-const SignUp = () => {
+const SignUp = (): React.ReactElement => {
   return (
     <SafeAreaView>
       <Text>SignUp</Text>
