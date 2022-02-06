@@ -9,7 +9,7 @@ import { Title } from './styles';
 import { KeyboardAvoidingView, ScrollView } from '../../template/styles';
 import logo from '../../assets/logo.png';
 import colors from '../../template/colors';
-import { RootStackParamList } from '../../routes';
+import { RootStackParamList } from '../../routes/auth.routes';
 import auth from '../../service/auth';
 import { UseAuth } from '../../hooks/authProvider';
 import { ErrorTemplate } from '../../models/error';
@@ -61,7 +61,7 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
       console.log('jwt: ', jwt);
       await handlerToken(jwt);
 
-      navigation.navigate('AppRoutes');
+      // navigation.navigate('AppRoutes');
     } catch (err) {
       const error: ErrorTemplate = err as ErrorTemplate;
 

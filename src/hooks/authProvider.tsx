@@ -76,8 +76,19 @@ const AuthProvider = ({ children }: Props) => {
   }, []);
 
   const logout = async (): Promise<void> => {
+    console.log('HAUSHAUHSUAHSUA');
+
     const keys: string[] = await AsyncStorage.getAllKeys();
     await AsyncStorage.multiRemove(keys);
+
+    if (!isMounted.current) {
+      return;
+    }
+    setToken('');
+    if (!isMounted.current) {
+      return;
+    }
+    setEmail('');
   };
 
   return (
