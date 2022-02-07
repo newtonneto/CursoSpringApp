@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
 
@@ -24,10 +24,31 @@ type ReturnContext = {
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
 
 const ServiceProvider = ({ children }: Props) => {
-  const { email, token, logout } = UseAuth();
+  const { email, token, logout, loading, handlerToken } = UseAuth();
+  const isMounted = useRef<boolean>(true);
+
+  useEffect(() => {
+    if (!loading) {
+      initializer();
+    }
+
+    return (): void => {
+      isMounted.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  const initializer = async (): Promise<void> => {
+    try {
+      await refreshToken();
+    } catch (err) {
+      await logout();
+    }
+  };
 
   const client = axios.create({
-    baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    baseURL: 'http://localhost:8080/',
+    //baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -40,7 +61,7 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   client.interceptors.request.use(
-    function (config) {
+    async function (config) {
       config.headers!.Authorization = `Bearer ${token}`;
 
       return config;
@@ -64,6 +85,17 @@ const ServiceProvider = ({ children }: Props) => {
       return Promise.reject(error);
     },
   );
+
+  const refreshToken = async () => {
+    try {
+      const { headers } = await api.post('auth/refresh_token', {});
+
+      handlerToken(headers.authorization);
+    } catch (err) {
+      console.log(err);
+      logout();
+    }
+  };
 
   const findAllCategories = async (): Promise<CategoriaDTO[] | null> => {
     try {

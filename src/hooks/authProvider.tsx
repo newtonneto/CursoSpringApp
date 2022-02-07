@@ -19,6 +19,8 @@ type ReturnContext = {
   email: string;
   handlerToken: Function;
   logout: Function;
+  loading: boolean;
+  setLoading: Function;
 };
 
 type Token = {
@@ -32,6 +34,7 @@ const AuthContext = createContext<ReturnContext | undefined>(undefined);
 const AuthProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
@@ -51,6 +54,11 @@ const AuthProvider = ({ children }: Props) => {
         }
         setEmail(saved_email);
       }
+
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
     };
 
     loadStorageData();
@@ -100,7 +108,15 @@ const AuthProvider = ({ children }: Props) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, setToken, email, handlerToken, logout }}>
+      value={{
+        token,
+        setToken,
+        email,
+        handlerToken,
+        logout,
+        loading,
+        setLoading,
+      }}>
       {children}
     </AuthContext.Provider>
   );
