@@ -5,8 +5,8 @@ import { ListItem, Avatar } from 'react-native-elements';
 
 import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
-import { findAll } from '../../service/domain/categoria';
 import colors from '../../template/colors';
+import { UserService } from '../../hooks/serviceProvider';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   <ListItem
@@ -36,6 +36,7 @@ const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
 );
 
 const Categories = (): React.ReactElement => {
+  const { findAllCategories } = UserService();
   const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
   const isMounted = useRef(true);
 
@@ -45,10 +46,11 @@ const Categories = (): React.ReactElement => {
     return () => {
       isMounted.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getCategories(): Promise<void> {
-    const list = await findAll();
+    const list = await findAllCategories();
 
     if (!isMounted.current) {
       return;

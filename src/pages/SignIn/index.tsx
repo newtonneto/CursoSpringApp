@@ -44,7 +44,9 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
     };
   }, [register]);
 
-  const onSubmit: SubmitHandler<FormData> = async formData => {
+  const onSubmit: SubmitHandler<FormData> = async (
+    formData,
+  ): Promise<undefined> => {
     if (!isMounted.current) {
       return;
     }
