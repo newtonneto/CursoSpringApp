@@ -16,7 +16,7 @@ export const ScrollView = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
   contentContainerStyle: {
     paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingVertical: 32,
     alignItems: 'center',
   },
 })`

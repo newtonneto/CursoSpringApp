@@ -6,8 +6,8 @@ interface ApiHandler {
 }
 
 const client = axios.create({
-  baseURL: 'http://localhost:8080/',
-  //baseURL: 'https://new2-curso-spring.herokuapp.com/',
+  //baseURL: 'http://localhost:8080/',
+  baseURL: 'https://new2-curso-spring.herokuapp.com/',
 });
 
 const auth: ApiHandler = {

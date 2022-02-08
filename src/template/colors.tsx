@@ -6,6 +6,7 @@ const colors = {
   warning: '#fdcb6e',
   normal: '#0984e3',
   text: '#fff',
+  disabled: '#b2bec3',
 };
 
 export default colors;
