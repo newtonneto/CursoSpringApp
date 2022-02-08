@@ -39,11 +39,7 @@ const schema: any = yup.object().shape({
     .string()
     .required('Prenchimento obrigatorio')
     .min(8, 'A senha precisa ter ao menos 8 dígitos')
-    .test(
-      'passwords-match',
-      'As senhas não coincidem',
-      (value): boolean => schema?.password === value,
-    ),
+    .oneOf([yup.ref('password')], 'Passwords does not match'),
   cpfOrCnpj: yup
     .string()
     .required('Prenchimento obrigatorio')
