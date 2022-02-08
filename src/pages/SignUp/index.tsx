@@ -10,6 +10,7 @@ import { SafeAreaView, ScrollView } from '../../template/styles';
 import colors from '../../template/colors';
 import cep from '../../service/viacep';
 import { ViaCep } from '../../models/viacep.dto';
+import { invalidCEPToast, connectionErrorToast } from '../../utils/toasts';
 
 type FormData = {
   name: string;
@@ -21,11 +22,11 @@ type FormData = {
   zipCode: string;
   street: string;
   number: string;
-  complement: string;
+  complement?: string;
   district: string;
 };
 
-const schema: any = yup.object().shape({
+const schema: yup.SchemaOf<FormData> = yup.object().shape({
   name: yup.string().required('Prenchimento obrigatorio'),
   email: yup
     .string()
@@ -70,6 +71,7 @@ const schema: any = yup.object().shape({
     ),
   street: yup.string().required('Prenchimento obrigatorio'),
   number: yup.string().required('Prenchimento obrigatorio'),
+  complement: yup.string(),
   district: yup.string().required('Prenchimento obrigatorio'),
 });
 
@@ -108,25 +110,34 @@ const SignUp = (): React.ReactElement => {
   };
 
   const getAddress = async (): Promise<void> => {
-    try {
-      const { data }: { data: ViaCep } = await cep.get(
-        `${getValues().zipCode}/json/`,
-      );
+    const code: string = getValues().zipCode;
 
-      setValue('street', data.logradouro);
-      setValue('district', data.bairro);
-    } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: ':(',
-        text2: 'CEP inválido',
-      });
+    if (code.length != 8) {
+      invalidCEPToast();
+    } else {
+      try {
+        const { data }: { data: ViaCep } = await cep.get(
+          `${getValues().zipCode}/json/`,
+        );
+
+        if (data?.erro) {
+          invalidCEPToast();
+        } else {
+          setValue('street', data.logradouro);
+          setValue('district', data.bairro);
+        }
+      } catch (err) {
+        connectionErrorToast();
+      }
     }
   };
 
   return (
     <>
-      <SafeAreaView>
+      <SafeAreaView
+        style={{
+          elevation: -1,
+        }}>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="always">
