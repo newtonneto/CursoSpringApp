@@ -5,12 +5,18 @@ import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { cpf, cnpj } from 'cpf-cnpj-validator';
+import { Picker } from '@react-native-picker/picker';
 
+import { ErrorView, ErrorText } from './styles';
 import { SafeAreaView, ScrollView } from '../../template/styles';
 import colors from '../../template/colors';
 import cep from '../../service/viacep';
 import { ViaCep } from '../../models/viacep.dto';
 import { invalidCEPToast, connectionErrorToast } from '../../utils/toasts';
+import { UseService } from '../../hooks/serviceProvider';
+import { EstadoDTO } from '../../models/estado.dto';
+import { CidadeDTO } from '../../models/cidade.dto';
+import Loader from '../../components/Loader';
 
 type FormData = {
   name: string;
@@ -24,6 +30,8 @@ type FormData = {
   number: string;
   complement?: string;
   district: string;
+  state: number;
+  city: number;
 };
 
 const schema: yup.SchemaOf<FormData> = yup.object().shape({
@@ -46,10 +54,13 @@ const schema: yup.SchemaOf<FormData> = yup.object().shape({
     .required('Prenchimento obrigatorio')
     .matches(/^[0-9]+$/, 'Apenas números')
     .min(11, 'Mínimo de 11 dígitos')
-    .test('len', 'Quantidade de dígitos incorreta', (value): boolean =>
-      value?.toString.length === 11
-        ? !cpf.isValid(value)
-        : !cnpj.isValid(value ? value : '0'),
+    .test(
+      'len',
+      'Quantidade de dígitos incorreta',
+      (value: string | undefined): boolean =>
+        value?.toString.length === 11
+          ? !cpf.isValid(value)
+          : !cnpj.isValid(value ? value : '0'),
     ),
   phone: yup
     .string()
@@ -58,7 +69,7 @@ const schema: yup.SchemaOf<FormData> = yup.object().shape({
     .test(
       'len',
       'Telefone deve conter 11 dígitos',
-      (value): boolean => value?.toString().length === 11,
+      (value: string | undefined): boolean => value?.toString().length === 11,
     ),
   zipCode: yup
     .string()
@@ -67,13 +78,39 @@ const schema: yup.SchemaOf<FormData> = yup.object().shape({
     .test(
       'len',
       'Telefone deve conter 11 dígitos',
-      (value): boolean => value?.toString().length === 8,
+      (value: string | undefined): boolean => value?.toString().length === 8,
     ),
   street: yup.string().required('Prenchimento obrigatorio'),
   number: yup.string().required('Prenchimento obrigatorio'),
   complement: yup.string(),
   district: yup.string().required('Prenchimento obrigatorio'),
+  state: yup
+    .number()
+    .required('Prenchimento obrigatorio')
+    .test(
+      'value',
+      'Selecione uma opção valida',
+      (value: number | undefined): boolean => !(value === 0),
+    ),
+  city: yup
+    .number()
+    .required('Prenchimento obrigatorio')
+    .test(
+      'value',
+      'Selecione uma opção valida',
+      (value: number | undefined): boolean => !(value === 0),
+    ),
 });
+
+const Error = ({
+  message,
+}: {
+  message: string | undefined;
+}): React.ReactElement => (
+  <ErrorView>
+    <ErrorText>{message}</ErrorText>
+  </ErrorView>
+);
 
 const SignUp = (): React.ReactElement => {
   const { handleSubmit, control, getValues, setValue, errors } =
@@ -81,15 +118,53 @@ const SignUp = (): React.ReactElement => {
       criteriaMode: 'all',
       resolver: yupResolver(schema),
     });
-  const [loading, setLoading] = useState<boolean>(false);
+  const { getStates, getCities } = UseService();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [states, setStates] = useState<EstadoDTO[]>([
+    { id: 0, nome: 'Selecionar' },
+  ]);
+  const [cities, setCities] = useState<CidadeDTO[]>([]);
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
+    getStatesData();
+
     return (): void => {
       isMounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getStatesData = async (): Promise<void> => {
+    try {
+      const data = await getStates();
+
+      setStates([...states, ...data]);
+    } catch (err) {
+      console.log('getStatesDate: ', err);
+
+      connectionErrorToast();
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
+    }
+  };
+
+  const getCitiesData = async (): Promise<void> => {
+    const code: number = getValues().state;
+
+    try {
+      const data = await getCities(code.toString());
+
+      setCities(data);
+    } catch (err) {
+      console.log('getCities: ', err);
+
+      connectionErrorToast();
+    }
+  };
 
   const onSubmit: SubmitHandler<FormData> = async formData => {
     if (!isMounted.current) {
@@ -141,236 +216,297 @@ const SignUp = (): React.ReactElement => {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           keyboardShouldPersistTaps="always">
-          <Controller
-            name="name"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Nome Completo*"
-                autoCompleteType="name"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                errorMessage={errors.name && errors.name.message}
-                errorStyle={{ color: colors.danger }}
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              <Controller
+                name="name"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Nome Completo*"
+                    autoCompleteType="name"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    errorMessage={errors.name && errors.name.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="email"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Email*"
-                autoCompleteType="email"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                errorMessage={errors.email && errors.email.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="email"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Email*"
+                    autoCompleteType="email"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    errorMessage={errors.email && errors.email.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="password"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Senha*"
-                autoCompleteType="password"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                autoCapitalize="none"
-                secureTextEntry={true}
-                errorMessage={errors.password && errors.password.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="password"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Senha*"
+                    autoCompleteType="password"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    errorMessage={errors.password && errors.password.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="passwordConfirmation"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Confirmação da Senha*"
-                autoCompleteType="password"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                autoCapitalize="none"
-                secureTextEntry={true}
-                errorMessage={
-                  errors.passwordConfirmation &&
-                  errors.passwordConfirmation.message
-                }
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="passwordConfirmation"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Confirmação da Senha*"
+                    autoCompleteType="password"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    errorMessage={
+                      errors.passwordConfirmation &&
+                      errors.passwordConfirmation.message
+                    }
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="cpfOrCnpj"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="CPF ou CNPJ*"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                keyboardType="numeric"
-                errorMessage={errors.cpfOrCnpj && errors.cpfOrCnpj.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="cpfOrCnpj"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="CPF ou CNPJ*"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    keyboardType="numeric"
+                    errorMessage={errors.cpfOrCnpj && errors.cpfOrCnpj.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="phone"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Telefone*"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                keyboardType="phone-pad"
-                errorMessage={errors.phone && errors.phone.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="phone"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Telefone*"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    keyboardType="phone-pad"
+                    errorMessage={errors.phone && errors.phone.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="zipCode"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="CEP*"
-                autoCompleteType="postal-code"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                onBlur={() => getAddress()}
-                keyboardType="numeric"
-                errorMessage={errors.zipCode && errors.zipCode.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="zipCode"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="CEP*"
+                    autoCompleteType="postal-code"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    onBlur={() => getAddress()}
+                    keyboardType="numeric"
+                    errorMessage={errors.zipCode && errors.zipCode.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="street"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Logradouro"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                disabled={true}
-                errorMessage={errors.street && errors.street.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="street"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Logradouro"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    disabled={true}
+                    errorMessage={errors.street && errors.street.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="number"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Número*"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                keyboardType="numeric"
-                errorMessage={errors.number && errors.number.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="number"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Número*"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    keyboardType="numeric"
+                    errorMessage={errors.number && errors.number.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="complement"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Complemento"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                errorMessage={errors.complement && errors.complement.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="complement"
+                defaultValue={''}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Complemento"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    errorMessage={
+                      errors.complement && errors.complement.message
+                    }
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Controller
-            name="district"
-            defaultValue={''}
-            control={control}
-            render={({ onChange, value }): any => (
-              <Input
-                placeholder="Bairro"
-                autoCompleteType="off"
-                onChangeText={onChange}
-                value={value}
-                placeholderTextColor={colors.disabled}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                disabled={true}
-                errorMessage={errors.district && errors.district.message}
-                errorStyle={{ color: colors.danger }}
+              <Controller
+                name="district"
+                defaultValue={''}
+                control={control}
+                render={({
+                  onChange,
+                  value,
+                }: {
+                  onChange: any;
+                  value: string;
+                }): any => (
+                  <Input
+                    placeholder="Bairro"
+                    autoCompleteType="off"
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    disabled={true}
+                    errorMessage={errors.district && errors.district.message}
+                    errorStyle={{ color: colors.danger }}
+                  />
+                )}
               />
-            )}
-          />
-          <Button
-            title="CADASTRAR"
-            loading={loading}
-            disabled={loading}
-            loadingProps={{ size: 'small', color: 'white' }}
-            buttonStyle={{
-              backgroundColor: colors.success,
-              borderRadius: 5,
-            }}
-            titleStyle={{ fontWeight: 'bold' }}
-            containerStyle={{
-              width: '95%',
-              marginVertical: 10,
-            }}
-            onPress={handleSubmit(onSubmit)}
-          />
+              <Controller
+                name="state"
+                defaultValue={0}
+                control={control}
+                render={({ onChange, value }) => (
+                  <>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={item => {
+                        onChange(item);
+                        getCitiesData();
+                      }}
+                      style={{ flex: 1, width: '100%' }}>
+                      {states.map((item: EstadoDTO) => (
+                        <Picker.Item
+                          label={item.nome}
+                          value={item.id}
+                          key={item.id}
+                        />
+                      ))}
+                    </Picker>
+                    {errors.state && <Error message={errors.state.message} />}
+                  </>
+                )}
+              />
+              <Controller
+                name="city"
+                defaultValue={0}
+                control={control}
+                render={({ onChange, value }) => (
+                  <>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      style={{ flex: 1, width: '100%' }}>
+                      {cities.map((item: CidadeDTO) => (
+                        <Picker.Item
+                          label={item.nome}
+                          value={item.id}
+                          key={item.id}
+                        />
+                      ))}
+                    </Picker>
+                    {errors.city && <Error message={errors.city.message} />}
+                  </>
+                )}
+              />
+              <Button
+                title="CADASTRAR"
+                loading={loading}
+                disabled={loading}
+                loadingProps={{ size: 'small', color: 'white' }}
+                buttonStyle={{
+                  backgroundColor: colors.success,
+                  borderRadius: 5,
+                }}
+                titleStyle={{ fontWeight: 'bold' }}
+                containerStyle={{
+                  width: '95%',
+                  marginVertical: 10,
+                }}
+                onPress={handleSubmit(onSubmit)}
+              />
+            </>
+          )}
         </ScrollView>
       </SafeAreaView>
       <Toast />

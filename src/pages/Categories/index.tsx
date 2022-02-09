@@ -6,7 +6,7 @@ import { ListItem, Avatar } from 'react-native-elements';
 import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
 import colors from '../../template/colors';
-import { UserService } from '../../hooks/serviceProvider';
+import { UseService } from '../../hooks/serviceProvider';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   <ListItem
@@ -36,7 +36,7 @@ const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
 );
 
 const Categories = (): React.ReactElement => {
-  const { findAllCategories } = UserService();
+  const { findAllCategories } = UseService();
   const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
   const isMounted = useRef(true);
 

@@ -171,7 +171,7 @@ const ServiceProvider = ({ children }: Props) => {
   );
 };
 
-const UserService = () => {
+const UseService = () => {
   const context = useContext(ServiceContext);
 
   if (!context) {
@@ -181,4 +181,4 @@ const UserService = () => {
   return context;
 };
 
-export { ServiceProvider, UserService };
+export { ServiceProvider, UseService };

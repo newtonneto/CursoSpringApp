@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { AvatarContainer, TitleContainer } from './styles';
 import { SafeAreaView, ScrollView } from '../../template/styles';
-import { UserService } from '../../hooks/serviceProvider';
+import { UseService } from '../../hooks/serviceProvider';
 import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
 import blank from '../../assets/avatar-blank.png';
@@ -16,7 +16,7 @@ interface FormData {
 }
 
 const Profile = (): React.ReactElement => {
-  const { getUserByEmail } = UserService();
+  const { getUserByEmail } = UseService();
   const { register, setValue, handleSubmit } = useForm<FormData>();
   const [user, setUser] = useState<ClienteDTO | null>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);

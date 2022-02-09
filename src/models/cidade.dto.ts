@@ -1,4 +1,4 @@
 export interface CidadeDTO {
-  id: string;
+  id: number;
   nome: string;
 }
