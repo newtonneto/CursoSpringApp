@@ -158,7 +158,7 @@ const SignUp = (): React.ReactElement => {
     try {
       const data = await getCities(code.toString());
 
-      setCities(data);
+      setCities([{ id: 0, nome: 'Selecionar' }, ...data]);
     } catch (err) {
       console.log('getCities: ', err);
 
@@ -453,6 +453,7 @@ const SignUp = (): React.ReactElement => {
                       onValueChange={item => {
                         onChange(item);
                         getCitiesData();
+                        setValue('city', 0);
                       }}
                       style={{ flex: 1, width: '100%' }}>
                       {states.map((item: EstadoDTO) => (
@@ -460,6 +461,7 @@ const SignUp = (): React.ReactElement => {
                           label={item.nome}
                           value={item.id}
                           key={item.id}
+                          color={colors.text}
                         />
                       ))}
                     </Picker>
@@ -482,6 +484,7 @@ const SignUp = (): React.ReactElement => {
                           label={item.nome}
                           value={item.id}
                           key={item.id}
+                          color={colors.text}
                         />
                       ))}
                     </Picker>
