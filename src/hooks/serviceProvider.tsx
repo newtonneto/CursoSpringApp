@@ -6,6 +6,8 @@ import { UseAuth } from './authProvider';
 import { ErrorTemplate } from '../models/error';
 import { ClienteDTO } from '../models/cliente.dto';
 import { CategoriaDTO } from '../models/categoria.dto';
+import { EstadoDTO } from '../models/estado.dto';
+import { CidadeDTO } from '../models/cidade.dto';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -19,6 +21,8 @@ type Props = {
 type ReturnContext = {
   findAllCategories: Function;
   getUserByEmail: Function;
+  getStates: Function;
+  getCities: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -129,8 +133,39 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const getStates = async (): Promise<EstadoDTO[] | null> => {
+    try {
+      const { data } = await api.get<EstadoDTO[]>('estados');
+
+      return data;
+    } catch (err) {
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('getStates: ', err);
+
+      return null;
+    }
+  };
+
+  const getCities = async (id: string): Promise<CidadeDTO[] | null> => {
+    try {
+      const { data } = await api.get<CidadeDTO[]>(`estados/${id}/cidades`);
+
+      return data;
+    } catch (err) {
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('getCities: ', err);
+
+      return null;
+    }
+  };
+
   return (
-    <ServiceContext.Provider value={{ findAllCategories, getUserByEmail }}>
+    <ServiceContext.Provider
+      value={{ findAllCategories, getUserByEmail, getStates, getCities }}>
       {children}
     </ServiceContext.Provider>
   );
