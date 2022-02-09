@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
@@ -12,11 +13,16 @@ import { SafeAreaView, ScrollView } from '../../template/styles';
 import colors from '../../template/colors';
 import cep from '../../service/viacep';
 import { ViaCep } from '../../models/viacep.dto';
-import { invalidCEPToast, connectionErrorToast } from '../../utils/toasts';
+import { errorToast, successToast } from '../../utils/toasts';
 import { UseService } from '../../hooks/serviceProvider';
 import { EstadoDTO } from '../../models/estado.dto';
 import { CidadeDTO } from '../../models/cidade.dto';
 import Loader from '../../components/Loader';
+import { ErrorTemplate } from '../../models/error';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../routes/auth.routes';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 type FormData = {
   name: string;
@@ -112,13 +118,13 @@ const Error = ({
   </ErrorView>
 );
 
-const SignUp = (): React.ReactElement => {
+const SignUp = ({ navigation }: Props): React.ReactElement => {
   const { handleSubmit, control, getValues, setValue, errors } =
     useForm<FormData>({
       criteriaMode: 'all',
       resolver: yupResolver(schema),
     });
-  const { getStates, getCities } = UseService();
+  const { getStates, getCities, createClient } = UseService();
   const [loading, setLoading] = useState<boolean>(true);
   const [states, setStates] = useState<EstadoDTO[]>([
     { id: 0, nome: 'Selecionar' },
@@ -143,7 +149,7 @@ const SignUp = (): React.ReactElement => {
     } catch (err) {
       console.log('getStatesDate: ', err);
 
-      connectionErrorToast();
+      errorToast('Erro de conexão');
     } finally {
       if (!isMounted.current) {
         return;
@@ -162,7 +168,7 @@ const SignUp = (): React.ReactElement => {
     } catch (err) {
       console.log('getCities: ', err);
 
-      connectionErrorToast();
+      errorToast('Erro de conexão');
     }
   };
 
@@ -173,9 +179,35 @@ const SignUp = (): React.ReactElement => {
     setLoading(true);
 
     try {
-      console.log('data: ', formData);
+      const payload = {
+        nome: formData.name,
+        email: formData.email,
+        senha: formData.password,
+        cpfOuCnpj: formData.cpfOrCnpj,
+        tipo: formData.cpfOrCnpj.length === 11 ? 1 : 2,
+        telefone1: formData.phone,
+        logradouro: formData.street,
+        numero: formData.number,
+        complemento: formData.complement,
+        cep: formData.zipCode,
+        cidadeId: formData.city,
+      };
+
+      await createClient(payload);
+
+      successToast('Cliente cadastrado com sucesso');
+
+      Alert.alert(':)', "Tudo certo, clique em 'OK' para voltar", [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('SignIn'),
+        },
+      ]);
     } catch (err) {
       console.log('onSubmit: ', err);
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      errorToast(error.message);
     } finally {
       if (!isMounted.current) {
         return;
@@ -188,7 +220,7 @@ const SignUp = (): React.ReactElement => {
     const code: string = getValues().zipCode;
 
     if (code.length != 8) {
-      invalidCEPToast();
+      errorToast('CEP inválido');
     } else {
       try {
         const { data }: { data: ViaCep } = await cep.get(
@@ -196,13 +228,13 @@ const SignUp = (): React.ReactElement => {
         );
 
         if (data?.erro) {
-          invalidCEPToast();
+          errorToast('CEP inválido');
         } else {
           setValue('street', data.logradouro);
           setValue('district', data.bairro);
         }
       } catch (err) {
-        connectionErrorToast();
+        errorToast('Erro de conexão');
       }
     }
   };
@@ -228,6 +260,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Nome Completo*"
                     autoCompleteType="name"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -246,6 +279,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Email*"
                     autoCompleteType="email"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -266,6 +300,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Senha*"
                     autoCompleteType="password"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -286,6 +321,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Confirmação da Senha*"
                     autoCompleteType="password"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -309,6 +345,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="CPF ou CNPJ*"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -328,6 +365,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Telefone*"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -347,6 +385,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="CEP*"
                     autoCompleteType="postal-code"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -367,6 +406,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Logradouro"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -386,6 +426,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Número*"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -405,6 +446,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Complemento"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}
@@ -431,6 +473,7 @@ const SignUp = (): React.ReactElement => {
                   <Input
                     placeholder="Bairro"
                     autoCompleteType="off"
+                    autoCorrect={false}
                     onChangeText={onChange}
                     value={value}
                     placeholderTextColor={colors.disabled}

@@ -23,6 +23,7 @@ type ReturnContext = {
   getUserByEmail: Function;
   getStates: Function;
   getCities: Function;
+  createClient: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -51,8 +52,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    //baseURL: 'http://localhost:8080/',
-    baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    baseURL: 'http://localhost:8080/',
+    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -163,9 +164,31 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const createClient = async (form: any) => {
+    try {
+      const data = await api.post('clientes', form);
+      console.log('data post: ', data);
+
+      return data;
+    } catch (err) {
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('createClient: ', err);
+
+      return null;
+    }
+  };
+
   return (
     <ServiceContext.Provider
-      value={{ findAllCategories, getUserByEmail, getStates, getCities }}>
+      value={{
+        findAllCategories,
+        getUserByEmail,
+        getStates,
+        getCities,
+        createClient,
+      }}>
       {children}
     </ServiceContext.Provider>
   );

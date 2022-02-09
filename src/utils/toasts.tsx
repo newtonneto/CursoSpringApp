@@ -1,17 +1,17 @@
 import Toast from 'react-native-toast-message';
 
-export const invalidCEPToast = (): void => {
+export const errorToast = (message: string): void => {
   Toast.show({
     type: 'error',
-    text1: ':(',
-    text2: 'CEP inválido',
+    text1: '😭',
+    text2: message,
   });
 };
 
-export const connectionErrorToast = (): void => {
+export const successToast = (message: string): void => {
   Toast.show({
-    type: 'error',
-    text1: ':(',
-    text2: 'Erro de conexão',
+    type: 'success',
+    text1: '😁',
+    text2: message,
   });
 };
