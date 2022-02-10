@@ -8,6 +8,7 @@ import { ClienteDTO } from '../models/cliente.dto';
 import { CategoriaDTO } from '../models/categoria.dto';
 import { EstadoDTO } from '../models/estado.dto';
 import { CidadeDTO } from '../models/cidade.dto';
+import { ProdutoDTO } from '../models/produto.dto';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -24,6 +25,7 @@ type ReturnContext = {
   getStates: Function;
   getCities: Function;
   createClient: Function;
+  findProductsByCategory: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -52,8 +54,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    baseURL: 'http://localhost:8080/',
-    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    // baseURL: 'http://localhost:8080/',
+    baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -188,6 +190,25 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const findProductsByCategory = async (
+    id: number,
+  ): Promise<ProdutoDTO[] | null> => {
+    try {
+      const { data } = await api.get<ProdutoDTO[]>(
+        `produtos/?categorias=${id}`,
+      );
+
+      return data;
+    } catch (err) {
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('findProductsByCategory: ', err);
+
+      return null;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -196,6 +217,7 @@ const ServiceProvider = ({ children }: Props) => {
         getStates,
         getCities,
         createClient,
+        findProductsByCategory,
       }}>
       {children}
     </ServiceContext.Provider>
