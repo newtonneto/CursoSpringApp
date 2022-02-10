@@ -119,7 +119,7 @@ const Error = ({
 );
 
 const SignUp = ({ navigation }: Props): React.ReactElement => {
-  const { handleSubmit, control, getValues, setValue, errors } =
+  const { handleSubmit, control, getValues, setValue, errors, reset } =
     useForm<FormData>({
       criteriaMode: 'all',
       resolver: yupResolver(schema),
@@ -207,7 +207,8 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
       console.log('onSubmit: ', err);
       const error: ErrorTemplate = err as ErrorTemplate;
 
-      errorToast(error.message);
+      errorToast(error.error);
+      reset(formData);
     } finally {
       if (!isMounted.current) {
         return;

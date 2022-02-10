@@ -4,4 +4,9 @@ export interface ErrorTemplate {
   path: string;
   status: number;
   timestamp: string;
+  errors?: ErrorField[];
+}
+export interface ErrorField {
+  fieldName: string;
+  message: string;
 }

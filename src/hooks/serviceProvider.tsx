@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
 
 import { UseAuth } from './authProvider';
-import { ErrorTemplate } from '../models/error';
+import { ErrorTemplate, ErrorField } from '../models/error';
 import { ClienteDTO } from '../models/cliente.dto';
 import { CategoriaDTO } from '../models/categoria.dto';
 import { EstadoDTO } from '../models/estado.dto';
@@ -52,8 +52,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    // baseURL: 'http://localhost:8080/',
-    baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    baseURL: 'http://localhost:8080/',
+    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -85,6 +85,14 @@ const ServiceProvider = ({ children }: Props) => {
 
       if (error.status === 403) {
         logout();
+      } else if (error.status === 422) {
+        let message = 'Foram encontrados os seguintes errors de validação: \n';
+
+        error.errors?.map((item: ErrorField): void => {
+          message += `${item.message} \n`;
+        });
+
+        error.message = message;
       }
 
       return Promise.reject(error);
@@ -176,7 +184,7 @@ const ServiceProvider = ({ children }: Props) => {
       Alert.alert(':(', `[${error.status}]: ${error.message}`);
       console.log('createClient: ', err);
 
-      return null;
+      throw error;
     }
   };
 
