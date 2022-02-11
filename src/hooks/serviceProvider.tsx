@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
 
 import { UseAuth } from './authProvider';
@@ -160,12 +159,7 @@ const ServiceProvider = ({ children }: Props) => {
     try {
       await api.post('clientes', form);
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('createClient: ', err);
-
-      throw error;
+      throw err;
     }
   };
 
@@ -177,12 +171,7 @@ const ServiceProvider = ({ children }: Props) => {
 
       return data.content;
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('findProductsByCategory: ', err);
-
-      return null;
+      throw err;
     }
   };
 

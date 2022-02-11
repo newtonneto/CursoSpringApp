@@ -18,7 +18,7 @@ import colors from '../template/colors';
 
 export type RootStackParamList = {
   Categories: undefined;
-  Products: undefined;
+  Products: { id: number };
   Product: undefined;
 };
 

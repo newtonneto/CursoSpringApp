@@ -18,7 +18,6 @@ import { UseService } from '../../hooks/serviceProvider';
 import { EstadoDTO } from '../../models/estado.dto';
 import { CidadeDTO } from '../../models/cidade.dto';
 import Loader from '../../components/Loader';
-import { ErrorTemplate } from '../../models/error';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../routes/auth.routes';
 import { ApiError } from '../../exceptions/exceptions';
@@ -213,11 +212,14 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
         },
       ]);
     } catch (err) {
-      console.log('onSubmit: ', err);
-      const error: ErrorTemplate = err as ErrorTemplate;
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
 
-      errorToast(error.error);
       reset(formData);
+      console.log('onSubmit: ', err);
     } finally {
       if (!isMounted.current) {
         return;

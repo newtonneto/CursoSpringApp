@@ -16,7 +16,7 @@ const Card = ({ item, page }: Props): React.ReactElement => {
 
   return (
     <ListItem
-      onPress={() => navigation.navigate(page)}
+      onPress={() => navigation.navigate(page, { id: item.id })}
       hasTVPreferredFocus={undefined}
       tvParallaxProperties={undefined}
       containerStyle={{
