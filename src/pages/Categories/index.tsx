@@ -7,7 +7,8 @@ import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
 import { UseService } from '../../hooks/serviceProvider';
 import Card from '../../components/Card';
-import { ErrorTemplate } from '../../models/error';
+import { ApiError } from '../../exceptions/exceptions';
+import { errorToast } from '../../utils/toasts';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   <Card item={item} page="Products" />
@@ -36,9 +37,12 @@ const Categories = (): React.ReactElement => {
       }
       setCategories(list);
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
 
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
       console.log('getCategories: ', err);
     }
   }

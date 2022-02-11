@@ -11,7 +11,8 @@ import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
 import blank from '../../assets/avatar-blank.png';
 import colors from '../../template/colors';
-import { ErrorTemplate } from '../../models/error';
+import { errorToast } from '../../utils/toasts';
+import { ApiError } from '../../exceptions/exceptions';
 
 interface FormData {
   email: string;
@@ -38,9 +39,12 @@ const Profile = (): React.ReactElement => {
 
         await getUserImage(data?.id);
       } catch (err) {
-        const error: ErrorTemplate = err as ErrorTemplate;
+        if (err instanceof ApiError) {
+          Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+        } else {
+          errorToast('Erro de conexão');
+        }
 
-        Alert.alert(':(', `[${error.status}]: ${error.message}`);
         console.log('getUserData: ', err);
       } finally {
         if (!isMounted.current) {
