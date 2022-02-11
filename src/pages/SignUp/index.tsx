@@ -21,6 +21,7 @@ import Loader from '../../components/Loader';
 import { ErrorTemplate } from '../../models/error';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../routes/auth.routes';
+import { ApiError } from '../../exceptions/exceptions';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -147,9 +148,13 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
 
       setStates([...states, ...data]);
     } catch (err) {
-      console.log('getStatesDate: ', err);
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
 
-      errorToast('Erro de conexão');
+      console.log('getStatesData: ', err);
     } finally {
       if (!isMounted.current) {
         return;
@@ -166,9 +171,13 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
 
       setCities([{ id: 0, nome: 'Selecionar' }, ...data]);
     } catch (err) {
-      console.log('getCities: ', err);
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
 
-      errorToast('Erro de conexão');
+      console.log('getCities: ', err);
     }
   };
 

@@ -10,6 +10,7 @@ import { EstadoDTO } from '../models/estado.dto';
 import { CidadeDTO } from '../models/cidade.dto';
 import { ProdutoDTO } from '../models/produto.dto';
 import { Page } from '../models/page';
+import { ApiError } from '../exceptions/exceptions';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -98,7 +99,7 @@ const ServiceProvider = ({ children }: Props) => {
         error.message = message;
       }
 
-      return Promise.reject(error);
+      return Promise.reject(new ApiError(error));
     },
   );
 
@@ -135,33 +136,23 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
-  const getStates = async (): Promise<EstadoDTO[] | null> => {
+  const getStates = async (): Promise<EstadoDTO[]> => {
     try {
       const { data } = await api.get<EstadoDTO[]>('estados');
 
       return data;
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('getStates: ', err);
-
-      return null;
+      throw err;
     }
   };
 
-  const getCities = async (id: string): Promise<CidadeDTO[] | null> => {
+  const getCities = async (id: string): Promise<CidadeDTO[]> => {
     try {
       const { data } = await api.get<CidadeDTO[]>(`estados/${id}/cidades`);
 
       return data;
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('getCities: ', err);
-
-      return null;
+      throw err;
     }
   };
 
