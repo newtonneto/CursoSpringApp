@@ -1,14 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState, useRef } from 'react';
+import { Alert } from 'react-native';
 import { ListRenderItem, FlatList } from 'react-native';
 
 import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
 import { UseService } from '../../hooks/serviceProvider';
 import Card from '../../components/Card';
+import { ErrorTemplate } from '../../models/error';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
-  <Card item={item} />
+  <Card item={item} page="Products" />
 );
 
 const Categories = (): React.ReactElement => {
@@ -26,12 +28,19 @@ const Categories = (): React.ReactElement => {
   }, []);
 
   async function getCategories(): Promise<void> {
-    const list = await findAllCategories();
+    try {
+      const list: CategoriaDTO[] = await findAllCategories();
 
-    if (!isMounted.current) {
-      return;
+      if (!isMounted.current) {
+        return;
+      }
+      setCategories(list);
+    } catch (err) {
+      const error: ErrorTemplate = err as ErrorTemplate;
+
+      Alert.alert(':(', `[${error.status}]: ${error.message}`);
+      console.log('getCategories: ', err);
     }
-    setCategories(list);
   }
 
   return (

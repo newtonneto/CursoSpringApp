@@ -8,7 +8,7 @@ import Card from '../../components/Card';
 import Loader from '../../components/Loader';
 
 const renderItem: ListRenderItem<ProdutoDTO> = ({ item }) => (
-  <Card item={item} />
+  <Card item={item} page="Product" />
 );
 
 const Products = (): React.ReactElement => {
@@ -28,8 +28,6 @@ const Products = (): React.ReactElement => {
 
   async function getProducts(): Promise<void> {
     const list = await findProductsByCategory(1);
-
-    console.log('list: ', list);
 
     if (!isMounted.current) {
       return;

@@ -9,6 +9,7 @@ import { CategoriaDTO } from '../models/categoria.dto';
 import { EstadoDTO } from '../models/estado.dto';
 import { CidadeDTO } from '../models/cidade.dto';
 import { ProdutoDTO } from '../models/produto.dto';
+import { Page } from '../models/page';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -54,8 +55,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    // baseURL: 'http://localhost:8080/',
-    baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    baseURL: 'http://localhost:8080/',
+    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -101,7 +102,7 @@ const ServiceProvider = ({ children }: Props) => {
     },
   );
 
-  const refreshToken = async () => {
+  const refreshToken = async (): Promise<void> => {
     try {
       const { headers } = await api.post('auth/refresh_token', {});
 
@@ -112,18 +113,13 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
-  const findAllCategories = async (): Promise<CategoriaDTO[] | null> => {
+  const findAllCategories = async (): Promise<CategoriaDTO[]> => {
     try {
       const { data } = await api.get<CategoriaDTO[]>('categorias');
 
       return data;
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('findAll: ', err);
-
-      return null;
+      throw err;
     }
   };
 
@@ -174,12 +170,9 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
-  const createClient = async (form: any) => {
+  const createClient = async (form: any): Promise<void> => {
     try {
-      const data = await api.post('clientes', form);
-      console.log('data post: ', data);
-
-      return data;
+      await api.post('clientes', form);
     } catch (err) {
       const error: ErrorTemplate = err as ErrorTemplate;
 
@@ -194,11 +187,9 @@ const ServiceProvider = ({ children }: Props) => {
     id: number,
   ): Promise<ProdutoDTO[] | null> => {
     try {
-      const { data } = await api.get<ProdutoDTO[]>(
-        `produtos/?categorias=${id}`,
-      );
+      const { data } = await api.get<Page>(`produtos/?categorias=${id}`);
 
-      return data;
+      return data.content;
     } catch (err) {
       const error: ErrorTemplate = err as ErrorTemplate;
 

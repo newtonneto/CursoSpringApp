@@ -1,17 +1,22 @@
 import React from 'react';
 import { ListItem, Avatar } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+
 import { CategoriaDTO } from '../../models/categoria.dto';
 import { ProdutoDTO } from '../../models/produto.dto';
-
 import colors from '../../template/colors';
 
 type Props = {
   item: CategoriaDTO | ProdutoDTO;
+  page: 'Products' | 'Product';
 };
 
-const Card = ({ item }: Props): React.ReactElement => {
+const Card = ({ item, page }: Props): React.ReactElement => {
+  const navigation = useNavigation();
+
   return (
     <ListItem
+      onPress={() => navigation.navigate(page)}
       hasTVPreferredFocus={undefined}
       tvParallaxProperties={undefined}
       containerStyle={{
