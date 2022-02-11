@@ -123,7 +123,7 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
-  const getUserByEmail = async (): Promise<ClienteDTO | null> => {
+  const getUserByEmail = async (): Promise<ClienteDTO> => {
     try {
       const { data } = await api.get<ClienteDTO>(
         `clientes/email?value=${email}`,
@@ -131,12 +131,7 @@ const ServiceProvider = ({ children }: Props) => {
 
       return data;
     } catch (err) {
-      const error: ErrorTemplate = err as ErrorTemplate;
-
-      Alert.alert(':(', `[${error.status}]: ${error.message}`);
-      console.log('getUserByEmail: ', err);
-
-      return null;
+      throw err;
     }
   };
 

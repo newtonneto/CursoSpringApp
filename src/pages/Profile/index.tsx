@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Alert } from 'react-native';
 import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -10,6 +11,7 @@ import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
 import blank from '../../assets/avatar-blank.png';
 import colors from '../../template/colors';
+import { ErrorTemplate } from '../../models/error';
 
 interface FormData {
   email: string;
@@ -26,18 +28,26 @@ const Profile = (): React.ReactElement => {
     register('email', { required: true });
 
     const getUserData = async (): Promise<void> => {
-      const data = await getUserByEmail();
+      try {
+        const data = await getUserByEmail();
 
-      if (!isMounted.current) {
-        return;
-      }
-      setUser(data);
-      if (!isMounted.current) {
-        return;
-      }
-      setLoading(false);
+        if (!isMounted.current) {
+          return;
+        }
+        setUser(data);
 
-      await getUserImage(data?.id);
+        await getUserImage(data?.id);
+      } catch (err) {
+        const error: ErrorTemplate = err as ErrorTemplate;
+
+        Alert.alert(':(', `[${error.status}]: ${error.message}`);
+        console.log('getUserData: ', err);
+      } finally {
+        if (!isMounted.current) {
+          return;
+        }
+        setLoading(false);
+      }
     };
 
     getUserData();
