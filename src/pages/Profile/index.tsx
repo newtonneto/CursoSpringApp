@@ -30,14 +30,14 @@ const Profile = (): React.ReactElement => {
 
     const getUserData = async (): Promise<void> => {
       try {
-        const data = await getUserByEmail();
+        const data: ClienteDTO = await getUserByEmail();
 
         if (!isMounted.current) {
           return;
         }
         setUser(data);
 
-        await getUserImage(data?.id);
+        await getUserImage(data.id);
       } catch (err) {
         if (err instanceof ApiError) {
           Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
@@ -62,7 +62,7 @@ const Profile = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getUserImage = async (id: string | undefined): Promise<void> => {
+  const getUserImage = async (id: string): Promise<void> => {
     try {
       await axios.get(
         `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,

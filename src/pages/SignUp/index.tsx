@@ -143,7 +143,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
 
   const getStatesData = async (): Promise<void> => {
     try {
-      const data = await getStates();
+      const data: EstadoDTO[] = await getStates();
 
       setStates([...states, ...data]);
     } catch (err) {
@@ -166,7 +166,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
     const code: number = getValues().state;
 
     try {
-      const data = await getCities(code.toString());
+      const data: CidadeDTO[] = await getCities(code.toString());
 
       setCities([{ id: 0, nome: 'Selecionar' }, ...data]);
     } catch (err) {
