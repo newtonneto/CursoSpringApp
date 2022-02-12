@@ -9,6 +9,7 @@ import { UseService } from '../../hooks/serviceProvider';
 import Card from '../../components/Card';
 import { ApiError } from '../../exceptions/exceptions';
 import { errorToast } from '../../utils/toasts';
+import Loader from '../../components/Loader';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   <Card item={item} page="Products" />
@@ -17,6 +18,8 @@ const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
 const Categories = (): React.ReactElement => {
   const { findAllCategories } = UseService();
   const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -29,6 +32,11 @@ const Categories = (): React.ReactElement => {
   }, []);
 
   async function getCategories(): Promise<void> {
+    if (!isMounted.current) {
+      return;
+    }
+    setRefreshing(true);
+
     try {
       const list: CategoriaDTO[] = await findAllCategories();
 
@@ -44,16 +52,32 @@ const Categories = (): React.ReactElement => {
       }
 
       console.log('getCategories: ', err);
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
+      if (!isMounted.current) {
+        return;
+      }
+      setRefreshing(false);
     }
   }
 
   return (
     <SafeAreaView>
-      <FlatList
-        data={categories}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <Loader />
+      ) : (
+        <FlatList
+          data={categories}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingVertical: 24 }}
+          refreshing={refreshing}
+          onRefresh={getCategories}
+        />
+      )}
     </SafeAreaView>
   );
 };

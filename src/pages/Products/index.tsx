@@ -21,6 +21,7 @@ const Products = ({ route }: Props): React.ReactElement => {
   const { findProductsByCategory } = UseService();
   const [products, setProducts] = useState<ProdutoDTO[] | null>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -33,6 +34,11 @@ const Products = ({ route }: Props): React.ReactElement => {
   }, []);
 
   async function getProducts(): Promise<void> {
+    if (!isMounted.current) {
+      return;
+    }
+    setRefreshing(true);
+
     try {
       const list = await findProductsByCategory(route.params.id);
 
@@ -53,6 +59,10 @@ const Products = ({ route }: Props): React.ReactElement => {
         return;
       }
       setLoading(false);
+      if (!isMounted.current) {
+        return;
+      }
+      setRefreshing(false);
     }
   }
 
@@ -65,6 +75,9 @@ const Products = ({ route }: Props): React.ReactElement => {
           data={products}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
+          contentContainerStyle={{ paddingVertical: 24 }}
+          refreshing={refreshing}
+          onRefresh={getProducts}
         />
       )}
     </SafeAreaView>
