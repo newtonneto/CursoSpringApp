@@ -39,6 +39,8 @@ const CartProvider = ({ children }: Props) => {
           return;
         }
         setCart(deserialized_cart);
+      } else {
+        createOrClearCart();
       }
     };
 

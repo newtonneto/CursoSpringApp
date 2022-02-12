@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState, useRef } from 'react';
-import { Alert } from 'react-native';
-import { ListRenderItem, FlatList } from 'react-native';
+import { Alert, ListRenderItem, FlatList } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import { SafeAreaView } from '../../template/styles';
