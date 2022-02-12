@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Alert } from 'react-native';
 import { ListRenderItem, FlatList } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { SafeAreaView } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
@@ -65,20 +66,26 @@ const Categories = (): React.ReactElement => {
   }
 
   return (
-    <SafeAreaView>
-      {loading ? (
-        <Loader />
-      ) : (
-        <FlatList
-          data={categories}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingVertical: 24 }}
-          refreshing={refreshing}
-          onRefresh={getCategories}
-        />
-      )}
-    </SafeAreaView>
+    <>
+      <SafeAreaView
+        style={{
+          elevation: -1,
+        }}>
+        {loading ? (
+          <Loader />
+        ) : (
+          <FlatList
+            data={categories}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingVertical: 24 }}
+            refreshing={refreshing}
+            onRefresh={getCategories}
+          />
+        )}
+      </SafeAreaView>
+      <Toast />
+    </>
   );
 };
 

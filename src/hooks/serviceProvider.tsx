@@ -27,6 +27,7 @@ type ReturnContext = {
   getCities: Function;
   createClient: Function;
   findProductsByCategory: Function;
+  getProductById: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -175,6 +176,16 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const getProductById = async (id: number): Promise<ProdutoDTO> => {
+    try {
+      const { data } = await api.get<ProdutoDTO>(`produtos/${id}`);
+
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -184,6 +195,7 @@ const ServiceProvider = ({ children }: Props) => {
         getCities,
         createClient,
         findProductsByCategory,
+        getProductById,
       }}>
       {children}
     </ServiceContext.Provider>

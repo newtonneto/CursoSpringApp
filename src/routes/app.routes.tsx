@@ -12,6 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from '../pages/Home';
 import Categories from '../pages/Categories';
 import Products from '../pages/Products';
+import Product from '../pages/Product';
 import Profile from '../pages/Profile';
 import { UseAuth } from '../hooks/authProvider';
 import colors from '../template/colors';
@@ -19,7 +20,7 @@ import colors from '../template/colors';
 export type RootStackParamList = {
   Categories: undefined;
   Products: { id: number };
-  Product: undefined;
+  Product: { id: number };
 };
 
 const Drawer = createDrawerNavigator();
@@ -30,6 +31,7 @@ const CategoriesStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Categories" component={Categories} />
       <Stack.Screen name="Products" component={Products} />
+      <Stack.Screen name="Product" component={Product} />
     </Stack.Navigator>
   );
 };

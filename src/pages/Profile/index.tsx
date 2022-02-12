@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import Toast from 'react-native-toast-message';
 
 import { AvatarContainer, TitleContainer } from './styles';
 import { SafeAreaView, ScrollView } from '../../template/styles';
@@ -21,7 +22,7 @@ interface FormData {
 const Profile = (): React.ReactElement => {
   const { getUserByEmail } = UseService();
   const { register, setValue, handleSubmit } = useForm<FormData>();
-  const [user, setUser] = useState<ClienteDTO | null>({} as ClienteDTO);
+  const [user, setUser] = useState<ClienteDTO>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);
   const isMounted = useRef(true);
 
@@ -82,54 +83,60 @@ const Profile = (): React.ReactElement => {
   };
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        {loading ? (
-          <Loader />
-        ) : (
-          <>
-            <AvatarContainer>
-              <Avatar
-                size={120}
-                rounded
-                source={user?.imageUrl ? { uri: user?.imageUrl } : blank}
+    <>
+      <SafeAreaView
+        style={{
+          elevation: -1,
+        }}>
+        <ScrollView>
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              <AvatarContainer>
+                <Avatar
+                  size={120}
+                  rounded
+                  source={user?.imageUrl ? { uri: user?.imageUrl } : blank}
+                />
+                <TitleContainer>
+                  <Text h3 h3Style={{ color: colors.primary, marginLeft: 16 }}>
+                    {user?.nome}
+                  </Text>
+                </TitleContainer>
+              </AvatarContainer>
+              <Input
+                defaultValue={user?.email}
+                placeholder="email"
+                autoCompleteType="email"
+                onChangeText={(text: any) => setValue('email', text)}
+                placeholderTextColor={colors.text}
+                selectionColor={colors.text}
+                inputStyle={{ color: colors.text }}
+                autoCapitalize="none"
               />
-              <TitleContainer>
-                <Text h3 h3Style={{ color: colors.primary, marginLeft: 16 }}>
-                  {user?.nome}
-                </Text>
-              </TitleContainer>
-            </AvatarContainer>
-            <Input
-              defaultValue={user?.email}
-              placeholder="email"
-              autoCompleteType="email"
-              onChangeText={(text: any) => setValue('email', text)}
-              placeholderTextColor={colors.text}
-              selectionColor={colors.text}
-              inputStyle={{ color: colors.text }}
-              autoCapitalize="none"
-            />
-            <Button
-              title="ATUALIZAR"
-              loading={loading}
-              disabled={loading}
-              loadingProps={{ size: 'small', color: 'white' }}
-              buttonStyle={{
-                backgroundColor: colors.success,
-                borderRadius: 5,
-              }}
-              titleStyle={{ fontWeight: 'bold' }}
-              containerStyle={{
-                width: '95%',
-                marginVertical: 10,
-              }}
-              onPress={handleSubmit(onSubmit)}
-            />
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+              <Button
+                title="ATUALIZAR"
+                loading={loading}
+                disabled={loading}
+                loadingProps={{ size: 'small', color: 'white' }}
+                buttonStyle={{
+                  backgroundColor: colors.success,
+                  borderRadius: 5,
+                }}
+                titleStyle={{ fontWeight: 'bold' }}
+                containerStyle={{
+                  width: '95%',
+                  marginVertical: 10,
+                }}
+                onPress={handleSubmit(onSubmit)}
+              />
+            </>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+      <Toast />
+    </>
   );
 };
 

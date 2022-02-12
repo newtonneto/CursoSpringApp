@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ListRenderItem, FlatList, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 
 import { SafeAreaView } from '../../template/styles';
 import { ProdutoDTO } from '../../models/produto.dto';
@@ -67,20 +68,26 @@ const Products = ({ route }: Props): React.ReactElement => {
   }
 
   return (
-    <SafeAreaView>
-      {loading ? (
-        <Loader />
-      ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingVertical: 24 }}
-          refreshing={refreshing}
-          onRefresh={getProducts}
-        />
-      )}
-    </SafeAreaView>
+    <>
+      <SafeAreaView
+        style={{
+          elevation: -1,
+        }}>
+        {loading ? (
+          <Loader />
+        ) : (
+          <FlatList
+            data={products}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingVertical: 24 }}
+            refreshing={refreshing}
+            onRefresh={getProducts}
+          />
+        )}
+      </SafeAreaView>
+      <Toast />
+    </>
   );
 };
 
