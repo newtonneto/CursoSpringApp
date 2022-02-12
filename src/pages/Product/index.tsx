@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Card, Button, Icon, Text } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
 import Loader from '../../components/Loader';
 import { RootStackParamList } from '../../routes/app.routes';
@@ -11,6 +12,8 @@ import { SafeAreaView, ScrollView } from '../../template/styles';
 import { ProdutoDTO } from '../../models/produto.dto';
 import { ApiError } from '../../exceptions/exceptions';
 import { errorToast } from '../../utils/toasts';
+import blank from '../../assets/product-blank.jpg';
+import colors from '../../template/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Product'>;
 
@@ -29,6 +32,8 @@ const Product = ({ route }: Props): React.ReactElement => {
           return;
         }
         setProduct(data);
+
+        await getProductImage(data.id);
       } catch (err) {
         if (err instanceof ApiError) {
           Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
@@ -53,6 +58,21 @@ const Product = ({ route }: Props): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getProductImage = async (id: number): Promise<void> => {
+    try {
+      await axios.get(
+        `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/prod${id}.jpg`,
+      );
+
+      setProduct(prevState => ({
+        ...(prevState as ProdutoDTO),
+        imageUrl: `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/prod${id}.jpg`,
+      }));
+    } catch (err) {
+      console.log('getProductImage: ', err);
+    }
+  };
+
   return (
     <>
       <SafeAreaView
@@ -63,25 +83,39 @@ const Product = ({ route }: Props): React.ReactElement => {
           {loading ? (
             <Loader />
           ) : (
-            <Card>
+            <Card containerStyle={{ width: '95%' }}>
               <Card.Title>{product.nome}</Card.Title>
               <Card.Divider />
               <Card.Image
                 style={{ padding: 0 }}
-                source={{
-                  uri: 'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
-                }}
+                source={product.imageUrl ? { uri: product.imageUrl } : blank}
               />
-              <Text style={{ marginBottom: 10 }}>
-                The idea with React Native Elements is more about component
-                structure than actual design.
+              <Text h3 style={{ marginVertical: 10 }}>
+                R$ {product.preco}
+              </Text>
+              <Text style={{ marginVertical: 10 }}>
+                Descrição do Produto:{'\n'}
+                {'\n'}
+                -Filhos de Gondor, de Rohan, meus irmãos;{'\n'}
+                -Vejo em seus olhos o mesmo medo que tomou meu coração;{'\n'}
+                -Poderá vir um dia em que a coragem dos homens termine, quando
+                desertarmos nossos amigos e trairmos os laços de amizade;{'\n'}
+                -Mas este dia não é hoje;{'\n'}
+                -Uma hora de lobos e escudos despedaçados, quando a era dos
+                homens for destruída;{'\n'}
+                -Mas este dia não é hoje;{'\n'}
+                -Hoje nós lutamos!;{'\n'}
+                -Por tudo que amam nesta bela terra, eu peço que resistam,
+                homens do ocidente!;{'\n'}
+                {'\n'}
+                -POR FRODO!
               </Text>
               <Button
                 icon={
                   <Icon
                     type="materialcommunityicons"
                     name="add-shopping-cart"
-                    color="#ffffff"
+                    color={colors.text}
                     iconStyle={{ marginRight: 10 }}
                     tvParallaxProperties={undefined}
                   />
@@ -92,7 +126,7 @@ const Product = ({ route }: Props): React.ReactElement => {
                   marginRight: 0,
                   marginBottom: 0,
                 }}
-                title="VIEW NOW"
+                title="Adicionar ao Carrinho"
               />
             </Card>
           )}

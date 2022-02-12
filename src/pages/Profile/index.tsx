@@ -63,7 +63,7 @@ const Profile = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getUserImage = async (id: string): Promise<void> => {
+  const getUserImage = async (id: number): Promise<void> => {
     try {
       await axios.get(
         `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,
@@ -97,7 +97,7 @@ const Profile = (): React.ReactElement => {
                 <Avatar
                   size={120}
                   rounded
-                  source={user?.imageUrl ? { uri: user?.imageUrl } : blank}
+                  source={user.imageUrl ? { uri: user.imageUrl } : blank}
                 />
                 <TitleContainer>
                   <Text h3 h3Style={{ color: colors.primary, marginLeft: 16 }}>
