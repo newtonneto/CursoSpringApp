@@ -38,7 +38,7 @@ const AuthProvider = ({ children }: Props) => {
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
-    const loadStorageData = async () => {
+    const loadStorageData = async (): Promise<void> => {
       const saved_token: string | null = await AsyncStorage.getItem('@csa:jwt');
       const saved_email: string | null = await AsyncStorage.getItem(
         '@csa:email',
