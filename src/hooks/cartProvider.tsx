@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Cart, CartItem } from '../models/cart';
+import { Cart } from '../models/cart';
+import { ProdutoDTO } from '../models/produto.dto';
 
 type Props = {
   children: React.ReactNode;
@@ -18,12 +19,13 @@ type ReturnContext = {
   loadingCart: boolean;
   insertProduct: Function;
   removeProduct: Function;
+  createOrClearCart: Function;
 };
 
 const CartContext = createContext<ReturnContext | undefined>(undefined);
 
 const CartProvider = ({ children }: Props) => {
-  const [cart, setCart] = useState<Cart>({} as Cart);
+  const [cart, setCart] = useState<Cart>({ items: [] });
   const [loadingCart, setLoadingCart] = useState<boolean>(false);
   const isMounted = useRef<boolean>(true);
 
@@ -47,17 +49,27 @@ const CartProvider = ({ children }: Props) => {
     };
   }, []);
 
-  const insertProduct = async (item: CartItem): Promise<void> => {
+  const insertProduct = async (product: ProdutoDTO): Promise<void> => {
     const saved_cart: string | null = await AsyncStorage.getItem('@csa:cart');
     let deserialized_cart: Cart;
     if (saved_cart) {
       deserialized_cart = JSON.parse(saved_cart);
-      deserialized_cart.items.push(item);
+
+      const index = deserialized_cart.items.findIndex(
+        item => item.produto.id === product.id,
+      );
+
+      if (index === -1) {
+        deserialized_cart.items.push({ quantidade: 1, produto: product });
+      } else {
+        deserialized_cart.items[index].quantidade =
+          deserialized_cart.items[index].quantidade + 1;
+      }
     } else {
       deserialized_cart = {
         items: [],
       };
-      deserialized_cart.items.push(item);
+      deserialized_cart.items.push({ quantidade: 1, produto: product });
     }
 
     if (!isMounted.current) {
@@ -103,9 +115,25 @@ const CartProvider = ({ children }: Props) => {
     }
   };
 
+  const createOrClearCart = async (): Promise<void> => {
+    if (!isMounted.current) {
+      return;
+    }
+    const deserialized_cart: Cart = { items: [] };
+
+    setCart(deserialized_cart);
+    await AsyncStorage.setItem('@csa:cart', JSON.stringify(deserialized_cart));
+  };
+
   return (
     <CartContext.Provider
-      value={{ cart, loadingCart, insertProduct, removeProduct }}>
+      value={{
+        cart,
+        loadingCart,
+        insertProduct,
+        removeProduct,
+        createOrClearCart,
+      }}>
       {children}
     </CartContext.Provider>
   );
