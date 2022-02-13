@@ -13,6 +13,7 @@ import Home from '../pages/Home';
 import Categories from '../pages/Categories';
 import Products from '../pages/Products';
 import Product from '../pages/Product';
+import Cart from '../pages/Cart';
 import Profile from '../pages/Profile';
 import { UseAuth } from '../hooks/authProvider';
 import colors from '../template/colors';
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   Categories: undefined;
   Products: { id: number };
   Product: { id: number };
+  Cart: undefined;
 };
 
 const Drawer = createDrawerNavigator();
@@ -32,6 +34,7 @@ const CategoriesStack = () => {
       <Stack.Screen name="Categories" component={Categories} />
       <Stack.Screen name="Products" component={Products} />
       <Stack.Screen name="Product" component={Product} />
+      <Stack.Screen name="Cart" component={Cart} />
     </Stack.Navigator>
   );
 };
@@ -63,7 +66,7 @@ const AppRoutes = () => {
         );
       }}>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Categorias" component={CategoriesStack} />
+      <Drawer.Screen name="Shopping" component={CategoriesStack} />
       <Drawer.Screen name="Perfil" component={Profile} />
     </Drawer.Navigator>
   );

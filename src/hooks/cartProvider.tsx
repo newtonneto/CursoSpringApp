@@ -16,7 +16,6 @@ type Props = {
 
 type ReturnContext = {
   cart: Cart;
-  loadingCart: boolean;
   insertProduct: Function;
   removeProduct: Function;
   createOrClearCart: Function;
@@ -26,7 +25,6 @@ const CartContext = createContext<ReturnContext | undefined>(undefined);
 
 const CartProvider = ({ children }: Props) => {
   const [cart, setCart] = useState<Cart>({ items: [] });
-  const [loadingCart, setLoadingCart] = useState<boolean>(false);
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
@@ -54,6 +52,7 @@ const CartProvider = ({ children }: Props) => {
   const insertProduct = async (product: ProdutoDTO): Promise<void> => {
     const saved_cart: string | null = await AsyncStorage.getItem('@csa:cart');
     let deserialized_cart: Cart;
+
     if (saved_cart) {
       deserialized_cart = JSON.parse(saved_cart);
 
@@ -81,23 +80,23 @@ const CartProvider = ({ children }: Props) => {
     await AsyncStorage.setItem('@csa:cart', JSON.stringify(deserialized_cart));
   };
 
-  const removeProduct = async (id: number): Promise<void> => {
-    if (id > -1) {
-      if (!isMounted.current) {
-        return;
-      }
-      setLoadingCart(true);
+  const removeProduct = async (product: ProdutoDTO): Promise<void> => {
+    const saved_cart: string | null = await AsyncStorage.getItem('@csa:cart');
+    let deserialized_cart: Cart;
 
-      const saved_cart: string | null = await AsyncStorage.getItem('@csa:cart');
+    if (saved_cart) {
+      deserialized_cart = JSON.parse(saved_cart);
 
-      if (saved_cart) {
-        const deserialized_cart: Cart = JSON.parse(saved_cart);
+      const index = deserialized_cart.items.findIndex(
+        item => item.produto.id === product.id,
+      );
 
-        if (deserialized_cart.items[id].quantidade === 1) {
-          deserialized_cart.items.splice(id, 1);
+      if (index > -1) {
+        if (deserialized_cart.items[index].quantidade === 1) {
+          deserialized_cart.items.splice(index, 1);
         } else {
-          deserialized_cart.items[id].quantidade =
-            deserialized_cart.items[id].quantidade - 1;
+          deserialized_cart.items[index].quantidade =
+            deserialized_cart.items[index].quantidade - 1;
         }
 
         if (!isMounted.current) {
@@ -109,11 +108,6 @@ const CartProvider = ({ children }: Props) => {
           JSON.stringify(deserialized_cart),
         );
       }
-
-      if (!isMounted.current) {
-        return;
-      }
-      setLoadingCart(false);
     }
   };
 
@@ -131,7 +125,6 @@ const CartProvider = ({ children }: Props) => {
     <CartContext.Provider
       value={{
         cart,
-        loadingCart,
         insertProduct,
         removeProduct,
         createOrClearCart,

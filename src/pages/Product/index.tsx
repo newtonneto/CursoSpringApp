@@ -14,11 +14,13 @@ import { ApiError } from '../../exceptions/exceptions';
 import { errorToast } from '../../utils/toasts';
 import blank from '../../assets/product-blank.jpg';
 import colors from '../../template/colors';
+import { UseCart } from '../../hooks/cartProvider';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Product'>;
 
-const Product = ({ route }: Props): React.ReactElement => {
+const Product = ({ route, navigation }: Props): React.ReactElement => {
   const { getProductById } = UseService();
+  const { insertProduct } = UseCart();
   const [product, setProduct] = useState<ProdutoDTO>({} as ProdutoDTO);
   const [loading, setLoading] = useState<boolean>(true);
   const isMounted = useRef<boolean>(true);
@@ -73,6 +75,12 @@ const Product = ({ route }: Props): React.ReactElement => {
     }
   };
 
+  const handleAddToCart = async (): Promise<void> => {
+    await insertProduct(product);
+
+    navigation.navigate('Cart');
+  };
+
   return (
     <>
       <SafeAreaView
@@ -111,6 +119,7 @@ const Product = ({ route }: Props): React.ReactElement => {
                 -POR FRODO!
               </Text>
               <Button
+                onPress={handleAddToCart}
                 icon={
                   <Icon
                     type="materialcommunityicons"
