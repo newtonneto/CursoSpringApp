@@ -1,5 +1,6 @@
 import React from 'react';
 import { ListItem, Avatar } from 'react-native-elements';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import blank from '../../assets/product-blank.jpg';
 import { UseCart } from '../../hooks/cartProvider';
@@ -9,14 +10,31 @@ type Props = {
   item: CartItem;
 };
 
+const AddButton = (): React.ReactElement => (
+  <MaterialCommunityIcons name="plus" size={16} />
+);
+const MinusButton = (): React.ReactElement => (
+  <MaterialCommunityIcons name="minus" size={16} />
+);
+const RemoveButton = (): React.ReactElement => (
+  <MaterialCommunityIcons name="trash-can-outline" size={16} />
+);
+
 const ItemInCart = ({ item }: Props): React.ReactElement => {
-  const { insertProduct, removeProduct } = UseCart();
+  const { insertProduct, removeProduct, totalRemove } = UseCart();
+  const buttons = [
+    { element: AddButton },
+    { element: MinusButton },
+    { element: RemoveButton },
+  ];
 
   const handleQuantity = (index: number): void => {
     if (index === 0) {
       addQuantity();
-    } else {
+    } else if (index === 1) {
       removeQuantity();
+    } else {
+      removeAll();
     }
   };
 
@@ -26,6 +44,10 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
 
   const removeQuantity = async (): Promise<void> => {
     await removeProduct(item.produto);
+  };
+
+  const removeAll = async (): Promise<void> => {
+    await totalRemove(item.produto);
   };
 
   return (
@@ -45,7 +67,7 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
         <ListItem.Subtitle>Quantidade: {item.quantidade}</ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.ButtonGroup
-        buttons={['+', '-']}
+        buttons={buttons}
         onPress={(index: number): void => handleQuantity(index)}
       />
     </ListItem>

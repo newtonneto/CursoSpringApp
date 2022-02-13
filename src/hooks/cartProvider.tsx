@@ -18,6 +18,7 @@ type ReturnContext = {
   cart: Cart;
   insertProduct: Function;
   removeProduct: Function;
+  totalRemove: Function;
   createOrClearCart: Function;
 };
 
@@ -111,6 +112,32 @@ const CartProvider = ({ children }: Props) => {
     }
   };
 
+  const totalRemove = async (product: ProdutoDTO): Promise<void> => {
+    const saved_cart: string | null = await AsyncStorage.getItem('@csa:cart');
+    let deserialized_cart: Cart;
+
+    if (saved_cart) {
+      deserialized_cart = JSON.parse(saved_cart);
+
+      const index = deserialized_cart.items.findIndex(
+        item => item.produto.id === product.id,
+      );
+
+      if (index > -1) {
+        deserialized_cart.items.splice(index, 1);
+
+        if (!isMounted.current) {
+          return;
+        }
+        setCart(deserialized_cart);
+        await AsyncStorage.setItem(
+          '@csa:cart',
+          JSON.stringify(deserialized_cart),
+        );
+      }
+    }
+  };
+
   const createOrClearCart = async (): Promise<void> => {
     if (!isMounted.current) {
       return;
@@ -127,6 +154,7 @@ const CartProvider = ({ children }: Props) => {
         cart,
         insertProduct,
         removeProduct,
+        totalRemove,
         createOrClearCart,
       }}>
       {children}
