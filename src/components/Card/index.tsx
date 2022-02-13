@@ -39,6 +39,9 @@ const Card = ({ item, page }: Props): React.ReactElement => {
 
       await axios.get(image_url);
 
+      if (!isMounted.current) {
+        return;
+      }
       setImage(image_url);
     } catch (err) {
       console.log('getImage: ', err);

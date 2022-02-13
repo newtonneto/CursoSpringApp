@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ListItem, Avatar } from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
 import blank from '../../assets/product-blank.jpg';
 import { UseCart } from '../../hooks/cartProvider';
@@ -22,11 +23,22 @@ const RemoveButton = (): React.ReactElement => (
 
 const ItemInCart = ({ item }: Props): React.ReactElement => {
   const { insertProduct, removeProduct, totalRemove } = UseCart();
+  const [image, setImage] = useState<string>('');
+  const isMounted = useRef<boolean>(true);
   const buttons = [
     { element: AddButton },
     { element: MinusButton },
     { element: RemoveButton },
   ];
+
+  useEffect(() => {
+    getImage();
+
+    return () => {
+      isMounted.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleQuantity = (index: number): void => {
     if (index === 0) {
@@ -50,6 +62,23 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
     await totalRemove(item.produto);
   };
 
+  const getImage = async (): Promise<void> => {
+    try {
+      await axios.get(
+        `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/prod${item.produto.id}-small.jpg`,
+      );
+
+      if (!isMounted.current) {
+        return;
+      }
+      setImage(
+        `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/prod${item.produto.id}-small.jpg`,
+      );
+    } catch (err) {
+      console.log('getImage: ', err);
+    }
+  };
+
   return (
     <ListItem
       hasTVPreferredFocus={undefined}
@@ -60,7 +89,7 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
         marginVertical: 8,
         borderRadius: 8,
       }}>
-      <Avatar rounded source={blank} />
+      <Avatar rounded source={image ? { uri: image } : blank} size="medium" />
       <ListItem.Content>
         <ListItem.Title>{item.produto.nome}</ListItem.Title>
         <ListItem.Subtitle>Preço: R$ {item.produto.preco}</ListItem.Subtitle>
