@@ -24,7 +24,7 @@ const Profile = (): React.ReactElement => {
   const { register, setValue, handleSubmit } = useForm<FormData>();
   const [user, setUser] = useState<ClienteDTO>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);
-  const isMounted = useRef(true);
+  const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
     register('email', { required: true });

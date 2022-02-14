@@ -24,7 +24,7 @@ const Products = ({ route }: Props): React.ReactElement => {
   const [products, setProducts] = useState<ProdutoDTO[] | null>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const isMounted = useRef(true);
+  const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
     getProducts();

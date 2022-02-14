@@ -14,6 +14,7 @@ import Categories from '../pages/Categories';
 import Products from '../pages/Products';
 import Product from '../pages/Product';
 import Cart from '../pages/Cart';
+import SelectAddress from '../pages/SelectAddress';
 import Profile from '../pages/Profile';
 import { UseAuth } from '../hooks/authProvider';
 import colors from '../template/colors';
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   Product: { id: number };
   CartStack: undefined;
   Cart: undefined;
+  SelectAddress: undefined;
 };
 
 const Drawer = createDrawerNavigator();
@@ -33,6 +35,7 @@ const CartStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen name="SelectAddress" component={SelectAddress} />
     </Stack.Navigator>
   );
 };

@@ -21,7 +21,7 @@ const Categories = (): React.ReactElement => {
   const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const isMounted = useRef(true);
+  const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
     getCategories();
