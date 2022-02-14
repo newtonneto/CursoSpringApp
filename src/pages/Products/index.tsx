@@ -11,6 +11,7 @@ import Loader from '../../components/Loader';
 import { errorToast } from '../../utils/toasts';
 import { ApiError } from '../../exceptions/exceptions';
 import { RootStackParamList } from '../../routes/app.routes';
+import CartButton from '../../components/CartButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Products'>;
 
@@ -85,6 +86,7 @@ const Products = ({ route }: Props): React.ReactElement => {
             onRefresh={getProducts}
           />
         )}
+        <CartButton />
       </SafeAreaView>
       <Toast />
     </>

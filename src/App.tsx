@@ -3,7 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Routes from './routes';
 
-const App = () => {
+const App = (): JSX.Element => {
   return (
     <SafeAreaProvider>
       <Routes />

@@ -6,9 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import App from './App';
 import AppProvider from './hooks';
 
-const Index = () => {
+const Index = (): JSX.Element => {
   LogBox.ignoreLogs([
-    "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
+    "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
   ]);
 
   return (

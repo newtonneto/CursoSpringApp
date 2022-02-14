@@ -15,6 +15,7 @@ import { errorToast } from '../../utils/toasts';
 import blank from '../../assets/product-blank.jpg';
 import colors from '../../template/colors';
 import { UseCart } from '../../hooks/cartProvider';
+import CartButton from '../../components/CartButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Product'>;
 
@@ -140,6 +141,7 @@ const Product = ({ route, navigation }: Props): React.ReactElement => {
             </Card>
           )}
         </ScrollView>
+        <CartButton />
       </SafeAreaView>
       <Toast />
     </>

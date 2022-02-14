@@ -10,6 +10,7 @@ import Card from '../../components/Card';
 import { ApiError } from '../../exceptions/exceptions';
 import { errorToast } from '../../utils/toasts';
 import Loader from '../../components/Loader';
+import CartButton from '../../components/CartButton';
 
 const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
   <Card item={item} page="Products" />
@@ -82,6 +83,7 @@ const Categories = (): React.ReactElement => {
             onRefresh={getCategories}
           />
         )}
+        <CartButton />
       </SafeAreaView>
       <Toast />
     </>

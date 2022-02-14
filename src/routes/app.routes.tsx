@@ -22,20 +22,31 @@ export type RootStackParamList = {
   Categories: undefined;
   Products: { id: number };
   Product: { id: number };
+  CartStack: undefined;
   Cart: undefined;
 };
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const CategoriesStack = () => {
+const CartStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Categories" component={Categories} />
-      <Stack.Screen name="Products" component={Products} />
-      <Stack.Screen name="Product" component={Product} />
       <Stack.Screen name="Cart" component={Cart} />
     </Stack.Navigator>
+  );
+};
+
+const ShoppingStack = () => {
+  return (
+    <>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Categories" component={Categories} />
+        <Stack.Screen name="Products" component={Products} />
+        <Stack.Screen name="Product" component={Product} />
+        <Stack.Screen name="CartStack" component={CartStack} />
+      </Stack.Navigator>
+    </>
   );
 };
 
@@ -66,7 +77,8 @@ const AppRoutes = () => {
         );
       }}>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Shopping" component={CategoriesStack} />
+      <Drawer.Screen name="Shopping" component={ShoppingStack} />
+      <Drawer.Screen name="Carrinho" component={CartStack} />
       <Drawer.Screen name="Perfil" component={Profile} />
     </Drawer.Navigator>
   );
