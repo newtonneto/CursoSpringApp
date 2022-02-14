@@ -23,3 +23,7 @@ export const ScrollView = styled.ScrollView.attrs({
   flex: 1;
   width: 100%;
 `;
+
+export const Separator = styled.View`
+  height: 16px;
+`;

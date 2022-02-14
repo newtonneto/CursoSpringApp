@@ -79,7 +79,7 @@ const Product = ({ route, navigation }: Props): React.ReactElement => {
   const handleAddToCart = async (): Promise<void> => {
     await insertProduct(product);
 
-    navigation.navigate('Cart');
+    navigation.navigate('CartStack');
   };
 
   return (
@@ -92,7 +92,14 @@ const Product = ({ route, navigation }: Props): React.ReactElement => {
           {loading ? (
             <Loader />
           ) : (
-            <Card containerStyle={{ width: '95%' }}>
+            <Card
+              containerStyle={{
+                flex: 1,
+                borderRadius: 8,
+                marginHorizontal: 0,
+                marginVertical: 0,
+                width: '100%',
+              }}>
               <Card.Title>{product.nome}</Card.Title>
               <Card.Divider />
               <Card.Image

@@ -54,8 +54,6 @@ const Card = ({ item, page }: Props): React.ReactElement => {
       hasTVPreferredFocus={undefined}
       tvParallaxProperties={undefined}
       containerStyle={{
-        marginHorizontal: 16,
-        marginVertical: 8,
         borderRadius: 8,
         height: 80,
       }}>

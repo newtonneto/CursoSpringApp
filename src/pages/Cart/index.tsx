@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, ListRenderItem } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { SafeAreaView } from '../../template/styles';
+import { SafeAreaView, Separator } from '../../template/styles';
 import { UseCart } from '../../hooks/cartProvider';
 import { CartItem } from '../../models/cart';
 import ItemInCart from '../../components/ItemInCart';
@@ -24,7 +24,11 @@ const Cart = (): React.ReactElement => {
           data={cart.items}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingVertical: 24 }}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingVertical: 32,
+          }}
+          ItemSeparatorComponent={Separator}
         />
       </SafeAreaView>
       <Toast />

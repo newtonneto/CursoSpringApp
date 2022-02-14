@@ -6,6 +6,7 @@ import axios from 'axios';
 import blank from '../../assets/product-blank.jpg';
 import { UseCart } from '../../hooks/cartProvider';
 import { CartItem } from '../../models/cart';
+import colors from '../../template/colors';
 
 type Props = {
   item: CartItem;
@@ -18,7 +19,11 @@ const MinusButton = (): React.ReactElement => (
   <MaterialCommunityIcons name="minus" size={16} />
 );
 const RemoveButton = (): React.ReactElement => (
-  <MaterialCommunityIcons name="trash-can-outline" size={16} />
+  <MaterialCommunityIcons
+    name="trash-can-outline"
+    size={16}
+    color={colors.danger}
+  />
 );
 
 const ItemInCart = ({ item }: Props): React.ReactElement => {
@@ -83,12 +88,7 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
     <ListItem
       hasTVPreferredFocus={undefined}
       tvParallaxProperties={undefined}
-      containerStyle={{
-        flex: 1,
-        marginHorizontal: 16,
-        marginVertical: 8,
-        borderRadius: 8,
-      }}>
+      containerStyle={{ flex: 1, borderRadius: 8 }}>
       <Avatar rounded source={image ? { uri: image } : blank} size="medium" />
       <ListItem.Content>
         <ListItem.Title>{item.produto.nome}</ListItem.Title>

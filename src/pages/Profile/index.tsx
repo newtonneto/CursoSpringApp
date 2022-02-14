@@ -114,6 +114,10 @@ const Profile = (): React.ReactElement => {
                 selectionColor={colors.text}
                 inputStyle={{ color: colors.text }}
                 autoCapitalize="none"
+                containerStyle={{
+                  marginHorizontal: 0,
+                  paddingHorizontal: 0,
+                }}
               />
               <Button
                 title="ATUALIZAR"
@@ -126,8 +130,8 @@ const Profile = (): React.ReactElement => {
                 }}
                 titleStyle={{ fontWeight: 'bold' }}
                 containerStyle={{
-                  width: '95%',
-                  marginVertical: 10,
+                  width: '100%',
+                  marginVertical: 0,
                 }}
                 onPress={handleSubmit(onSubmit)}
               />

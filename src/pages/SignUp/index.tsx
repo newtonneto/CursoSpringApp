@@ -280,6 +280,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     inputStyle={{ color: colors.text }}
                     errorMessage={errors.name && errors.name.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -301,6 +305,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     keyboardType="email-address"
                     errorMessage={errors.email && errors.email.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -322,6 +330,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     secureTextEntry={true}
                     errorMessage={errors.password && errors.password.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -346,6 +358,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                       errors.passwordConfirmation.message
                     }
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -366,6 +382,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     keyboardType="numeric"
                     errorMessage={errors.cpfOrCnpj && errors.cpfOrCnpj.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -386,6 +406,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     keyboardType="phone-pad"
                     errorMessage={errors.phone && errors.phone.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -407,6 +431,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     keyboardType="numeric"
                     errorMessage={errors.zipCode && errors.zipCode.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -427,6 +455,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     disabled={true}
                     errorMessage={errors.street && errors.street.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -447,6 +479,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     keyboardType="numeric"
                     errorMessage={errors.number && errors.number.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -468,6 +504,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                       errors.complement && errors.complement.message
                     }
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -494,6 +534,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     disabled={true}
                     errorMessage={errors.district && errors.district.message}
                     errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
                   />
                 )}
               />
@@ -558,8 +602,8 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 }}
                 titleStyle={{ fontWeight: 'bold' }}
                 containerStyle={{
-                  width: '95%',
-                  marginVertical: 10,
+                  width: '100%',
+                  marginVertical: 0,
                 }}
                 onPress={handleSubmit(onSubmit)}
               />

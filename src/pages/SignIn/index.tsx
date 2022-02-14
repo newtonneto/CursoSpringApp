@@ -79,12 +79,11 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         keyboardShouldPersistTaps="always">
-        <Title>Sistema de pedidos</Title>
         <Image
           source={logo}
           containerStyle={{
             aspectRatio: 1,
-            width: '100%',
+            width: '75%',
             flex: 1,
           }}
           PlaceholderContent={<ActivityIndicator />}
@@ -107,6 +106,10 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
           }
           errorStyle={{ color: colors.danger }}
           autoCapitalize="none"
+          containerStyle={{
+            marginHorizontal: 0,
+            paddingHorizontal: 0,
+          }}
         />
         {errors.email && errors.email.type && emailRef.current.shake()}
         <Input
@@ -130,6 +133,10 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
           errorStyle={{ color: colors.danger }}
           autoCapitalize="none"
           secureTextEntry={true}
+          containerStyle={{
+            marginHorizontal: 0,
+            paddingHorizontal: 0,
+          }}
         />
         {errors.password && errors.password.type && passwordRef.current.shake()}
         <Button
@@ -143,10 +150,25 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
           }}
           titleStyle={{ fontWeight: 'bold' }}
           containerStyle={{
-            width: '95%',
-            marginVertical: 10,
+            width: '100%',
+            marginVertical: 0,
+            marginBottom: 16,
           }}
           onPress={handleSubmit(onSubmit)}
+        />
+        <Button
+          title="ESQUECI MINHA SENHA"
+          disabled={loading}
+          buttonStyle={{
+            borderColor: colors.text,
+          }}
+          type="outline"
+          titleStyle={{ color: colors.text }}
+          containerStyle={{
+            width: '100%',
+            marginVertical: 0,
+            marginBottom: 16,
+          }}
         />
         <Button
           title="REGISTRAR"
@@ -157,7 +179,8 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
           type="outline"
           titleStyle={{ color: colors.text }}
           containerStyle={{
-            width: '95%',
+            width: '100%',
+            marginVertical: 0,
           }}
           onPress={() => navigation.navigate('SignUp')}
         />

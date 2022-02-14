@@ -3,7 +3,7 @@ import { ListRenderItem, FlatList, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 
-import { SafeAreaView } from '../../template/styles';
+import { SafeAreaView, Separator } from '../../template/styles';
 import { ProdutoDTO } from '../../models/produto.dto';
 import { UseService } from '../../hooks/serviceProvider';
 import Card from '../../components/Card';
@@ -81,7 +81,11 @@ const Products = ({ route }: Props): React.ReactElement => {
             data={products}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
-            contentContainerStyle={{ paddingVertical: 24 }}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 32,
+            }}
+            ItemSeparatorComponent={Separator}
             refreshing={refreshing}
             onRefresh={getProducts}
           />

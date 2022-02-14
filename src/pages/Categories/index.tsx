@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Alert, ListRenderItem, FlatList } from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { SafeAreaView } from '../../template/styles';
+import { SafeAreaView, Separator } from '../../template/styles';
 import { CategoriaDTO } from '../../models/categoria.dto';
 import { UseService } from '../../hooks/serviceProvider';
 import Card from '../../components/Card';
@@ -78,7 +78,11 @@ const Categories = (): React.ReactElement => {
             data={categories}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
-            contentContainerStyle={{ paddingVertical: 24 }}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingVertical: 32,
+            }}
+            ItemSeparatorComponent={Separator}
             refreshing={refreshing}
             onRefresh={getCategories}
           />
