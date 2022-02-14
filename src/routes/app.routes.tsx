@@ -15,9 +15,11 @@ import Products from '../pages/Products';
 import Product from '../pages/Product';
 import Cart from '../pages/Cart';
 import SelectAddress from '../pages/SelectAddress';
+import Checkout from '../pages/Checkout';
 import Profile from '../pages/Profile';
 import { UseAuth } from '../hooks/authProvider';
 import colors from '../template/colors';
+import { EnderecoDTO } from '../models/endereco.dto';
 
 export type RootStackParamList = {
   Categories: undefined;
@@ -26,6 +28,7 @@ export type RootStackParamList = {
   CartStack: undefined;
   Cart: undefined;
   SelectAddress: undefined;
+  Checkout: { client_id: number; address: EnderecoDTO };
 };
 
 const Drawer = createDrawerNavigator();
@@ -36,6 +39,7 @@ const CartStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Cart" component={Cart} />
       <Stack.Screen name="SelectAddress" component={SelectAddress} />
+      <Stack.Screen name="Checkout" component={Checkout} />
     </Stack.Navigator>
   );
 };

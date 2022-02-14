@@ -56,10 +56,10 @@ const Cart = ({ navigation }: Props): React.ReactElement => {
         }}
         onPress={() => navigation.navigate('Categories')}
       />
+      <Separator />
       <Button
         title="CONTINUAR PARA PAGAMENTO"
         buttonStyle={{
-          marginTop: 16,
           backgroundColor: colors.success,
           borderRadius: 5,
         }}
@@ -68,6 +68,7 @@ const Cart = ({ navigation }: Props): React.ReactElement => {
           width: '100%',
           marginVertical: 0,
         }}
+        onPress={() => navigation.navigate('SelectAddress')}
       />
     </View>
   );
@@ -88,7 +89,7 @@ const Cart = ({ navigation }: Props): React.ReactElement => {
           }}
           ItemSeparatorComponent={Separator}
           ListHeaderComponent={headerComponent}
-          ListFooterComponent={footerComponent}
+          ListFooterComponent={cart.items.length ? footerComponent : null}
         />
       </SafeAreaView>
       <Toast />

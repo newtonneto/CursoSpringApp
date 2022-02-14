@@ -11,15 +11,12 @@ import { ApiError } from '../../exceptions/exceptions';
 import { UseService } from '../../hooks/serviceProvider';
 import { ClienteDTO } from '../../models/cliente.dto';
 
-const renderItem: ListRenderItem<EnderecoDTO> = ({ item }) => (
-  <Address item={item} />
-);
-
 const SelectAddress = (): React.ReactElement => {
   const { getUserByEmail } = UseService();
   const [addresses, setAddresses] = useState<EnderecoDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const isMounted = useRef<boolean>(true);
+  const client_id = useRef<number>(0);
 
   useEffect(() => {
     const getUserData = async (): Promise<void> => {
@@ -29,7 +26,12 @@ const SelectAddress = (): React.ReactElement => {
         if (!isMounted.current) {
           return;
         }
+
+        if (!isMounted.current) {
+          return;
+        }
         setAddresses(data.enderecos);
+        client_id.current = data.id;
       } catch (err) {
         if (err instanceof ApiError) {
           Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
@@ -53,6 +55,10 @@ const SelectAddress = (): React.ReactElement => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const renderItem: ListRenderItem<EnderecoDTO> = ({ item }) => (
+    <Address item={item} client_id={client_id.current} />
+  );
 
   return (
     <>

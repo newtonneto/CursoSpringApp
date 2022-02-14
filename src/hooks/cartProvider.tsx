@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Cart } from '../models/cart';
 import { ProdutoDTO } from '../models/produto.dto';
+import { UseAuth } from './authProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -25,8 +26,17 @@ type ReturnContext = {
 const CartContext = createContext<ReturnContext | undefined>(undefined);
 
 const CartProvider = ({ children }: Props) => {
+  const { email, token } = UseAuth();
   const [cart, setCart] = useState<Cart>({ items: [] });
   const isMounted = useRef<boolean>(true);
+
+  useEffect(() => {
+    //Monitora o estados de email e token, se ambos forem apagados significa que o usuário foi deslogado,
+    //nesse caso, o estado do carrinho tbm deve ser apagado
+    if (!email && !token) {
+      setCart({ items: [] });
+    }
+  }, [email, token]);
 
   useEffect(() => {
     const loadStorageData = async (): Promise<void> => {
