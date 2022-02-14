@@ -5,7 +5,6 @@ import { Button, Input, Image } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { Title } from './styles';
 import { KeyboardAvoidingView, ScrollView } from '../../template/styles';
 import logo from '../../assets/logo.png';
 import colors from '../../template/colors';

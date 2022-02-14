@@ -94,6 +94,9 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
         <ListItem.Title>{item.produto.nome}</ListItem.Title>
         <ListItem.Subtitle>Preço: R$ {item.produto.preco}</ListItem.Subtitle>
         <ListItem.Subtitle>Quantidade: {item.quantidade}</ListItem.Subtitle>
+        <ListItem.Subtitle>
+          Subtotal: {item.quantidade * item.produto.preco}
+        </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.ButtonGroup
         buttons={buttons}
