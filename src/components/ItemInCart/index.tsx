@@ -109,6 +109,7 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.ButtonGroup
+        //@ts-ignore
         buttons={buttons}
         onPress={(index: number): void => handleQuantity(index)}
       />
