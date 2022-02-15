@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import axios, { AxiosResponse } from 'axios';
 
 import { UseAuth } from './authProvider';
@@ -30,30 +36,43 @@ type ReturnContext = {
   findProductsByCategory: Function;
   getProductById: Function;
   purchase: Function;
+  sessionLoading: boolean;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
 
 const ServiceProvider = ({ children }: Props) => {
   const { email, token, logout, loading, handlerToken } = UseAuth();
+  const [sessionLoading, setSessionLoading] = useState<boolean>(true);
   const isMounted = useRef<boolean>(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!loading) {
       initializer();
     }
-
-    return (): void => {
-      isMounted.current = false;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
   const initializer = async (): Promise<void> => {
     try {
-      await refreshToken();
+      //Verifica se possui email e token salvos antes de tentar pegar um novo token
+      if (email && token) {
+        await refreshToken();
+      }
     } catch (err) {
+      //Faz o logout caso ocorra algum problema na requisição de um novo token
       await logout();
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setSessionLoading(false);
     }
   };
 
@@ -207,6 +226,7 @@ const ServiceProvider = ({ children }: Props) => {
         findProductsByCategory,
         getProductById,
         purchase,
+        sessionLoading,
       }}>
       {children}
     </ServiceContext.Provider>
