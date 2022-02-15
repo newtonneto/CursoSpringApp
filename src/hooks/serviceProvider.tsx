@@ -10,6 +10,7 @@ import { CidadeDTO } from '../models/cidade.dto';
 import { ProdutoDTO } from '../models/produto.dto';
 import { Page } from '../models/page';
 import { ApiError } from '../exceptions/exceptions';
+import { PedidoDTO } from '../models/pedido.dto';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -28,6 +29,7 @@ type ReturnContext = {
   createClient: Function;
   findProductsByCategory: Function;
   getProductById: Function;
+  purchase: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -186,6 +188,14 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const purchase = async (payload: PedidoDTO): Promise<void> => {
+    try {
+      await api.post('pedidos', payload);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -196,6 +206,7 @@ const ServiceProvider = ({ children }: Props) => {
         createClient,
         findProductsByCategory,
         getProductById,
+        purchase,
       }}>
       {children}
     </ServiceContext.Provider>

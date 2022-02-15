@@ -92,10 +92,20 @@ const ItemInCart = ({ item }: Props): React.ReactElement => {
       <Avatar rounded source={image ? { uri: image } : blank} size="medium" />
       <ListItem.Content>
         <ListItem.Title>{item.produto.nome}</ListItem.Title>
-        <ListItem.Subtitle>Preço: R$ {item.produto.preco}</ListItem.Subtitle>
+        <ListItem.Subtitle>
+          Preço:{' '}
+          {item.produto.preco.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })}
+        </ListItem.Subtitle>
         <ListItem.Subtitle>Quantidade: {item.quantidade}</ListItem.Subtitle>
         <ListItem.Subtitle>
-          Subtotal: {item.quantidade * item.produto.preco}
+          Subtotal:{' '}
+          {(item.quantidade * item.produto.preco).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          })}
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.ButtonGroup

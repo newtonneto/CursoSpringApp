@@ -34,7 +34,11 @@ const Cart = ({ navigation }: Props): React.ReactElement => {
   const headerComponent = (): React.ReactElement => (
     <View style={{ flex: 1, alignItems: 'flex-end' }}>
       <Text h4 style={{ color: colors.text }}>
-        Total do carrinho: R$ {total}
+        Total do carrinho:{' '}
+        {total.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        })}
       </Text>
       <Separator />
     </View>

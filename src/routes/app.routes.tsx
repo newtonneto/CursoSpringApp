@@ -29,6 +29,7 @@ export type RootStackParamList = {
   Cart: undefined;
   SelectAddress: undefined;
   Checkout: { client_id: number; address: EnderecoDTO };
+  ShoppingStack: { screen: string };
 };
 
 const Drawer = createDrawerNavigator();
@@ -40,6 +41,7 @@ const CartStack = () => {
       <Stack.Screen name="Cart" component={Cart} />
       <Stack.Screen name="SelectAddress" component={SelectAddress} />
       <Stack.Screen name="Checkout" component={Checkout} />
+      <Stack.Screen name="ShoppingStack" component={ShoppingStack} />
     </Stack.Navigator>
   );
 };

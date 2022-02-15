@@ -107,7 +107,10 @@ const Product = ({ route, navigation }: Props): React.ReactElement => {
                 source={product.imageUrl ? { uri: product.imageUrl } : blank}
               />
               <Text h3 style={{ marginVertical: 10 }}>
-                R$ {product.preco}
+                {product.preco.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })}
               </Text>
               <Text style={{ marginVertical: 10 }}>
                 Descrição do Produto:{'\n'}

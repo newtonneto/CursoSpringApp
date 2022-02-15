@@ -554,13 +554,13 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                         getCitiesData();
                         setValue('city', 0);
                       }}
-                      style={{ flex: 1, width: '100%' }}>
+                      style={{ flex: 1, width: '100%', color: colors.text }}>
                       {states.map((item: EstadoDTO) => (
                         <Picker.Item
                           label={item.nome}
                           value={item.id}
                           key={item.id}
-                          color={colors.text}
+                          color={colors.background}
                         />
                       ))}
                     </Picker>
@@ -577,13 +577,13 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
-                      style={{ flex: 1, width: '100%' }}>
+                      style={{ flex: 1, width: '100%', color: colors.text }}>
                       {cities.map((item: CidadeDTO) => (
                         <Picker.Item
                           label={item.nome}
                           value={item.id}
                           key={item.id}
-                          color={colors.text}
+                          color={colors.background}
                         />
                       ))}
                     </Picker>
