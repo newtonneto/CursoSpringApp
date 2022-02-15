@@ -41,7 +41,8 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
     return () => {
       isMounted.current = false;
     };
-  }, [register]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit: SubmitHandler<FormData> = async (
     formData,
