@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import axios, { AxiosResponse } from 'axios';
 
 import { UseAuth } from './authProvider';
@@ -17,6 +18,7 @@ import { ProdutoDTO } from '../models/produto.dto';
 import { Page } from '../models/page';
 import { ApiError } from '../exceptions/exceptions';
 import { PedidoDTO } from '../models/pedido.dto';
+import getFilename from '../utils/getFilename';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -37,6 +39,7 @@ type ReturnContext = {
   getProductById: Function;
   purchase: Function;
   sessionLoading: boolean;
+  uploadAvatar: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -77,8 +80,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    // baseURL: 'http://localhost:8080/',
-    baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    baseURL: 'http://localhost:8080/',
+    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -219,6 +222,28 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const uploadAvatar = async (uri: string): Promise<void> => {
+    try {
+      let form_data = new FormData();
+      form_data.append('file', {
+        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
+        name: getFilename(uri),
+        type: 'image/jpeg',
+      });
+
+      await fetch(`http://localhost:8080/clientes/picture`, {
+        method: 'POST',
+        body: form_data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (err) {
+      console.log('err: ', err);
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -231,6 +256,7 @@ const ServiceProvider = ({ children }: Props) => {
         getProductById,
         purchase,
         sessionLoading,
+        uploadAvatar,
       }}>
       {children}
     </ServiceContext.Provider>
@@ -248,3 +274,19 @@ const UseService = () => {
 };
 
 export { ServiceProvider, UseService };
+
+// await fetch(`http://localhost:8080/clientes/picture`, {
+//   method: 'POST',
+//   body: form_data,
+//   headers: {
+//     Authorization: `Bearer ${token}`,
+//   },
+// })
+//   .then(response => {
+//     console.log('response', response);
+//   })
+//   .catch(error => {
+//     console.log('error', error);
+//   });
+
+// await api.post('clientes/picture', form_data);

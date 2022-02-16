@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Modal } from 'react-native';
 import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -12,18 +12,26 @@ import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
 import blank from '../../assets/avatar-blank.png';
 import colors from '../../template/colors';
-import { errorToast } from '../../utils/toasts';
+import { errorToast, successToast } from '../../utils/toasts';
 import { ApiError } from '../../exceptions/exceptions';
+import cameraPermission from '../../utils/cameraPermission';
+import externalWritePermission from '../../utils/externalWritePermission';
+import Camera from '../../components/Camera';
+import { RNCamera } from 'react-native-camera';
 
 interface FormData {
   email: string;
 }
 
 const Profile = (): React.ReactElement => {
-  const { getUserByEmail } = UseService();
+  const { getUserByEmail, uploadAvatar } = UseService();
   const { register, setValue, handleSubmit } = useForm<FormData>();
   const [user, setUser] = useState<ClienteDTO>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);
+  const [avatarLoading, setAvatarLoading] = useState<boolean>(true);
+  const [cameraVisible, setCameraVisible] = useState<boolean>(false);
+  const [photo, setPhoto] = useState<string>('');
+  const [camera, setCamera] = useState<RNCamera>();
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
@@ -63,6 +71,36 @@ const Profile = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (photo) {
+      submitAvatar();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photo]);
+
+  const submitAvatar = async (): Promise<void> => {
+    if (!isMounted.current) {
+      return;
+    }
+    setAvatarLoading(true);
+
+    try {
+      // const response = await fetch(photo);
+      // const blob = await response.blob();
+      await uploadAvatar(photo);
+
+      successToast('Avatar atualizado com sucesso');
+    } catch (err) {
+      Alert.alert(':(', 'Erro no upload da imagem');
+      console.log('submitAvatar: ', err);
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setAvatarLoading(false);
+    }
+  };
+
   const getUserImage = async (id: number): Promise<void> => {
     try {
       await axios.get(
@@ -75,6 +113,23 @@ const Profile = (): React.ReactElement => {
       }));
     } catch (err) {
       console.log('getUserImage: ', err);
+    }
+  };
+
+  const useCamera = async () => {
+    let isCameraPermitted = await cameraPermission();
+    let isStoragePermitted = await externalWritePermission();
+
+    if (isCameraPermitted && isStoragePermitted) {
+      if (!isMounted.current) {
+        return;
+      }
+      setCameraVisible(true);
+    } else {
+      Alert.alert(
+        ':(',
+        'Para usar a função de câmera é necessário aceitar as permissões',
+      );
     }
   };
 
@@ -93,8 +148,20 @@ const Profile = (): React.ReactElement => {
             <Loader />
           ) : (
             <>
+              <Modal
+                animationType="slide"
+                transparent={false}
+                visible={cameraVisible}>
+                <Camera
+                  camera={camera}
+                  setCamera={setCamera}
+                  setCameraVisible={setCameraVisible}
+                  setPhoto={setPhoto}
+                />
+              </Modal>
               <AvatarContainer>
                 <Avatar
+                  onPress={useCamera}
                   size={120}
                   rounded
                   source={user.imageUrl ? { uri: user.imageUrl } : blank}

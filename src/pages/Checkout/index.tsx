@@ -50,8 +50,6 @@ const Checkout = ({ route, navigation }: Props): React.ReactElement => {
     }
     setLoading(true);
 
-    successToast('Pedido realizado com sucesso');
-
     try {
       const payload: PedidoDTO = {
         cliente: { id: route.params.client_id },
