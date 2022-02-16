@@ -187,11 +187,15 @@ const ServiceProvider = ({ children }: Props) => {
 
   const findProductsByCategory = async (
     id: number,
-  ): Promise<ProdutoDTO[] | null> => {
+    page: number = 0,
+    linesPerPage: number = 10,
+  ): Promise<Page> => {
     try {
-      const { data } = await api.get<Page>(`produtos/?categorias=${id}`);
+      const { data } = await api.get<Page>(
+        `produtos/?categorias=${id}&page=${page}&linesPerPage=${linesPerPage}`,
+      );
 
-      return data.content;
+      return data;
     } catch (err) {
       throw err;
     }

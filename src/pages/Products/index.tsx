@@ -1,8 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { ListRenderItem, FlatList, Alert } from 'react-native';
+import {
+  ListRenderItem,
+  FlatList,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 
+import { FooterView } from './styles';
 import { SafeAreaView, Separator } from '../../template/styles';
 import { ProdutoDTO } from '../../models/produto.dto';
 import { UseService } from '../../hooks/serviceProvider';
@@ -12,6 +18,8 @@ import { errorToast } from '../../utils/toasts';
 import { ApiError } from '../../exceptions/exceptions';
 import { RootStackParamList } from '../../routes/app.routes';
 import CartButton from '../../components/CartButton';
+import { Page } from '../../models/page';
+import colors from '../../template/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Products'>;
 
@@ -21,10 +29,13 @@ const renderItem: ListRenderItem<ProdutoDTO> = ({ item }) => (
 
 const Products = ({ route }: Props): React.ReactElement => {
   const { findProductsByCategory } = UseService();
-  const [products, setProducts] = useState<ProdutoDTO[] | null>([]);
+  const [products, setProducts] = useState<ProdutoDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [infinityLoading, setInfinityLoading] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const isMounted = useRef<boolean>(true);
+  const page = useRef<number>(0);
+  const last = useRef<boolean>(false);
 
   useEffect(() => {
     getProducts();
@@ -35,19 +46,19 @@ const Products = ({ route }: Props): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function getProducts(): Promise<void> {
-    if (!isMounted.current) {
-      return;
-    }
-    setRefreshing(true);
-
+  const getProducts = async (): Promise<void> => {
     try {
-      const list = await findProductsByCategory(route.params.id);
+      const list: Page = await findProductsByCategory(
+        route.params.id,
+        page.current,
+      );
 
       if (!isMounted.current) {
         return;
       }
-      setProducts(list);
+      setProducts([...products, ...list.content]);
+      last.current = list.last;
+      page.current++;
     } catch (err) {
       if (err instanceof ApiError) {
         Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
@@ -61,12 +72,47 @@ const Products = ({ route }: Props): React.ReactElement => {
         return;
       }
       setLoading(false);
+    }
+  };
+
+  const refreshList = async () => {
+    page.current = 0;
+    if (!isMounted.current) {
+      return;
+    }
+    setRefreshing(true);
+
+    await getProducts();
+
+    if (!isMounted.current) {
+      return;
+    }
+    setRefreshing(false);
+  };
+
+  const infinityList = async () => {
+    if (!last.current) {
       if (!isMounted.current) {
         return;
       }
-      setRefreshing(false);
+      setInfinityLoading(true);
+
+      await getProducts();
+
+      if (!isMounted.current) {
+        return;
+      }
+      setInfinityLoading(false);
     }
-  }
+  };
+
+  const footerComponent = () => (
+    <FooterView>
+      {infinityLoading && (
+        <ActivityIndicator size="small" color={colors.text} />
+      )}
+    </FooterView>
+  );
 
   return (
     <>
@@ -85,9 +131,12 @@ const Products = ({ route }: Props): React.ReactElement => {
               paddingHorizontal: 24,
               paddingVertical: 32,
             }}
+            ListFooterComponent={footerComponent}
             ItemSeparatorComponent={Separator}
             refreshing={refreshing}
-            onRefresh={getProducts}
+            onRefresh={refreshList}
+            onEndReached={infinityList}
+            onEndReachedThreshold={0.1}
           />
         )}
         <CartButton />
