@@ -7,4 +7,5 @@ export interface ClienteDTO {
   imageUrl?: string;
   cpfOuCnpj: string;
   enderecos: EnderecoDTO[];
+  telefones: string[];
 }

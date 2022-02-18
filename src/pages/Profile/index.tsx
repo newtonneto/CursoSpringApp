@@ -4,9 +4,18 @@ import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
+import Collapsible from 'react-native-collapsible';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { AvatarContainer, TitleContainer } from './styles';
-import { SafeAreaView, ScrollView } from '../../template/styles';
+import {
+  AvatarContainer,
+  TitleContainer,
+  Section,
+  SectionTitle,
+  SectionContent,
+  SectionItem,
+} from './styles';
+import { SafeAreaView, ScrollView, Separator } from '../../template/styles';
 import { UseService } from '../../hooks/serviceProvider';
 import { ClienteDTO } from '../../models/cliente.dto';
 import Loader from '../../components/Loader';
@@ -19,8 +28,10 @@ import externalWritePermission from '../../utils/externalWritePermission';
 import Camera from '../../components/Camera';
 import { RNCamera } from 'react-native-camera';
 import getFileFromStorage from '../../utils/getFileFromStorage';
+import { EnderecoDTO } from '../../models/endereco.dto';
 
 interface FormData {
+  name: string;
   email: string;
 }
 
@@ -34,8 +45,11 @@ const Profile = (): React.ReactElement => {
   const [photo, setPhoto] = useState<string>('');
   const [camera, setCamera] = useState<RNCamera>();
   const isMounted = useRef<boolean>(true);
+  const [addressAccordion, setAddressAccordion] = useState<number>(-1);
+  const [phoneAccordion, setPhoneAccordion] = useState<boolean>(false);
 
   useEffect(() => {
+    register('name', { required: true });
     register('email', { required: true });
 
     const getUserData = async (): Promise<void> => {
@@ -174,8 +188,16 @@ const Profile = (): React.ReactElement => {
     );
   };
 
-  const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
-    console.log('formData: ', formData);
+  // const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
+  //   console.log('formData: ', formData);
+  // };
+
+  const handleExpanse = (index: number): void => {
+    if (index === addressAccordion) {
+      setAddressAccordion(-1);
+    } else {
+      setAddressAccordion(index);
+    }
   };
 
   return (
@@ -223,13 +245,30 @@ const Profile = (): React.ReactElement => {
                   />
                 )}
                 <TitleContainer>
-                  <Text h3 h3Style={{ color: colors.text, marginLeft: 16 }}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    h3
+                    h3Style={{ color: colors.text, marginLeft: 16 }}>
                     {user?.nome}
                   </Text>
                 </TitleContainer>
               </AvatarContainer>
               <Input
-                defaultValue={user?.email}
+                defaultValue={user.nome}
+                placeholder="name"
+                autoCompleteType="name"
+                onChangeText={(text: any) => setValue('name', text)}
+                placeholderTextColor={colors.text}
+                selectionColor={colors.text}
+                inputStyle={{ color: colors.text }}
+                containerStyle={{
+                  marginHorizontal: 0,
+                  paddingHorizontal: 0,
+                }}
+              />
+              <Input
+                defaultValue={user.email}
                 placeholder="email"
                 autoCompleteType="email"
                 onChangeText={(text: any) => setValue('email', text)}
@@ -242,7 +281,90 @@ const Profile = (): React.ReactElement => {
                   paddingHorizontal: 0,
                 }}
               />
-              <Button
+              <Input
+                defaultValue={user.cpfOuCnpj}
+                placeholder="CPF ou CNPJ"
+                autoCompleteType="off"
+                placeholderTextColor={colors.text}
+                selectionColor={colors.text}
+                inputStyle={{ color: colors.text }}
+                autoCapitalize="none"
+                containerStyle={{
+                  marginHorizontal: 0,
+                  paddingHorizontal: 0,
+                }}
+                disabled={true}
+              />
+              {user.enderecos.map((item: EnderecoDTO, index: number) => (
+                <View key={index} style={{ width: '100%' }}>
+                  <Section
+                    onPress={() => handleExpanse(index)}
+                    style={{
+                      borderBottomLeftRadius:
+                        addressAccordion === index ? 0 : 8,
+                      borderBottomRightRadius:
+                        addressAccordion === index ? 0 : 8,
+                    }}>
+                    <MaterialCommunityIcons
+                      name="home"
+                      color={colors.background}
+                      size={20}
+                    />
+                    <SectionTitle>Endereço {index + 1}</SectionTitle>
+                  </Section>
+                  <Collapsible
+                    collapsed={addressAccordion === index ? false : true}>
+                    <SectionContent
+                      style={{
+                        borderTopLeftRadius: addressAccordion === index ? 0 : 8,
+                        borderTopRightRadius:
+                          addressAccordion === index ? 0 : 8,
+                      }}>
+                      <SectionItem>
+                        {item.logradouro}, {item.numero}
+                      </SectionItem>
+                      {item.complemento && (
+                        <SectionItem>{item.complemento}</SectionItem>
+                      )}
+                      <SectionItem>
+                        {item.bairro}, {item.cep}
+                      </SectionItem>
+                      <SectionItem>
+                        {item.cidade.nome}, {item.cidade.estado?.nome}
+                      </SectionItem>
+                    </SectionContent>
+                  </Collapsible>
+                </View>
+              ))}
+              <Separator />
+              <View style={{ width: '100%' }}>
+                <Section
+                  onPress={() => setPhoneAccordion(!phoneAccordion)}
+                  style={{
+                    borderBottomLeftRadius: phoneAccordion === true ? 0 : 8,
+                    borderBottomRightRadius: phoneAccordion === true ? 0 : 8,
+                  }}>
+                  <MaterialCommunityIcons
+                    name="phone-classic"
+                    color={colors.background}
+                    size={20}
+                  />
+                  <SectionTitle>Telefones</SectionTitle>
+                </Section>
+                <Collapsible collapsed={phoneAccordion === true ? false : true}>
+                  <SectionContent
+                    style={{
+                      borderTopLeftRadius: phoneAccordion === true ? 0 : 8,
+                      borderTopRightRadius: phoneAccordion === true ? 0 : 8,
+                    }}>
+                    {user.telefones.map((item: string, index: number) => (
+                      <SectionItem key={index}>{item}</SectionItem>
+                    ))}
+                  </SectionContent>
+                </Collapsible>
+              </View>
+              <Separator />
+              {/* <Button
                 title="ATUALIZAR"
                 loading={loading}
                 disabled={loading}
@@ -257,7 +379,7 @@ const Profile = (): React.ReactElement => {
                   marginVertical: 0,
                 }}
                 onPress={handleSubmit(onSubmit)}
-              />
+              /> */}
             </>
           )}
         </ScrollView>
