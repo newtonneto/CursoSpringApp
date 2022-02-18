@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Alert, Modal } from 'react-native';
+import { ActivityIndicator, Alert, Modal, View } from 'react-native';
 import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -18,6 +18,7 @@ import cameraPermission from '../../utils/cameraPermission';
 import externalWritePermission from '../../utils/externalWritePermission';
 import Camera from '../../components/Camera';
 import { RNCamera } from 'react-native-camera';
+import getFileFromStorage from '../../utils/getFileFromStorage';
 
 interface FormData {
   email: string;
@@ -28,7 +29,7 @@ const Profile = (): React.ReactElement => {
   const { register, setValue, handleSubmit } = useForm<FormData>();
   const [user, setUser] = useState<ClienteDTO>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);
-  const [avatarLoading, setAvatarLoading] = useState<boolean>(true);
+  const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const [cameraVisible, setCameraVisible] = useState<boolean>(false);
   const [photo, setPhoto] = useState<string>('');
   const [camera, setCamera] = useState<RNCamera>();
@@ -90,6 +91,8 @@ const Profile = (): React.ReactElement => {
       await uploadAvatar(photo);
 
       successToast('Avatar atualizado com sucesso');
+
+      await getUserImage(user.id);
     } catch (err) {
       Alert.alert(':(', 'Erro no upload da imagem');
       console.log('submitAvatar: ', err);
@@ -102,21 +105,31 @@ const Profile = (): React.ReactElement => {
   };
 
   const getUserImage = async (id: number): Promise<void> => {
+    if (!isMounted.current) {
+      return;
+    }
+    setAvatarLoading(true);
+
     try {
-      await axios.get(
-        `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,
-      );
+      const image_url = `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg?${new Date()}`;
+
+      await axios.get(image_url);
 
       setUser(prevState => ({
         ...(prevState as ClienteDTO),
-        imageUrl: `https://new2-curso-spring.s3.sa-east-1.amazonaws.com/cp${id}.jpg`,
+        imageUrl: image_url,
       }));
     } catch (err) {
       console.log('getUserImage: ', err);
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setAvatarLoading(false);
     }
   };
 
-  const useCamera = async () => {
+  const startCamera = async (): Promise<void> => {
     let isCameraPermitted = await cameraPermission();
     let isStoragePermitted = await externalWritePermission();
 
@@ -131,6 +144,34 @@ const Profile = (): React.ReactElement => {
         'Para usar a função de câmera é necessário aceitar as permissões',
       );
     }
+  };
+
+  const startStorage = async (): Promise<void> => {
+    let isStoragePermitted = await externalWritePermission();
+
+    if (isStoragePermitted) {
+      getFileFromStorage(setPhoto);
+    } else {
+      Alert.alert(
+        ':(',
+        'Para usar a função de câmera é necessário aceitar as permissões',
+      );
+    }
+  };
+
+  const imageOptions = (): void => {
+    Alert.alert(
+      '',
+      'Selecione um método para submeter uma nova imagem',
+      [
+        { text: 'Cancelar' },
+        { text: 'Selecionar da galeria', onPress: () => startStorage() },
+        { text: 'Tirar com a câmera', onPress: () => startCamera() },
+      ],
+      {
+        cancelable: true,
+      },
+    );
   };
 
   const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
@@ -160,14 +201,29 @@ const Profile = (): React.ReactElement => {
                 />
               </Modal>
               <AvatarContainer>
-                <Avatar
-                  onPress={useCamera}
-                  size={120}
-                  rounded
-                  source={user.imageUrl ? { uri: user.imageUrl } : blank}
-                />
+                {avatarLoading ? (
+                  <View
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderWidth: 1,
+                      borderColor: 'red',
+                      borderRadius: 60,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  </View>
+                ) : (
+                  <Avatar
+                    onPress={imageOptions}
+                    size={120}
+                    rounded
+                    source={user.imageUrl ? { uri: user.imageUrl } : blank}
+                  />
+                )}
                 <TitleContainer>
-                  <Text h3 h3Style={{ color: colors.primary, marginLeft: 16 }}>
+                  <Text h3 h3Style={{ color: colors.text, marginLeft: 16 }}>
                     {user?.nome}
                   </Text>
                 </TitleContainer>

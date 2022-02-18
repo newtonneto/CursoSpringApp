@@ -80,8 +80,8 @@ const ServiceProvider = ({ children }: Props) => {
   };
 
   const client = axios.create({
-    baseURL: 'http://localhost:8080/',
-    // baseURL: 'https://new2-curso-spring.herokuapp.com/',
+    // baseURL: 'http://localhost:8080/',
+    baseURL: 'https://new2-curso-spring.herokuapp.com/',
   });
 
   const api: ApiHandler = {
@@ -231,7 +231,7 @@ const ServiceProvider = ({ children }: Props) => {
         type: 'image/jpeg',
       });
 
-      await fetch(`http://localhost:8080/clientes/picture`, {
+      await fetch(`https://new2-curso-spring.herokuapp.com/clientes/picture`, {
         method: 'POST',
         body: form_data,
         headers: {
