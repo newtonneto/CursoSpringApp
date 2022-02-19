@@ -15,7 +15,7 @@ import { CategoriaDTO } from '../models/categoria.dto';
 import { EstadoDTO } from '../models/estado.dto';
 import { CidadeDTO } from '../models/cidade.dto';
 import { ProdutoDTO } from '../models/produto.dto';
-import { Page } from '../models/page';
+import { PageProduto, PageCompra } from '../models/page';
 import { ApiError } from '../exceptions/exceptions';
 import { PedidoDTO } from '../models/pedido.dto';
 import getFilename from '../utils/getFilename';
@@ -40,6 +40,7 @@ type ReturnContext = {
   purchase: Function;
   sessionLoading: boolean;
   uploadAvatar: Function;
+  getPurchases: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -192,9 +193,9 @@ const ServiceProvider = ({ children }: Props) => {
     id: number,
     page: number = 0,
     linesPerPage: number = 10,
-  ): Promise<Page> => {
+  ): Promise<PageProduto> => {
     try {
-      const { data } = await api.get<Page>(
+      const { data } = await api.get<PageProduto>(
         `produtos/?categorias=${id}&page=${page}&linesPerPage=${linesPerPage}`,
       );
 
@@ -244,6 +245,16 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const getPurchases = async (): Promise<PageCompra> => {
+    try {
+      const { data } = await api.get<PageCompra>('pedidos');
+
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -257,6 +268,7 @@ const ServiceProvider = ({ children }: Props) => {
         purchase,
         sessionLoading,
         uploadAvatar,
+        getPurchases,
       }}>
       {children}
     </ServiceContext.Provider>

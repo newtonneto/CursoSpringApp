@@ -1,30 +1,31 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState, useRef } from 'react';
-import { Alert, ListRenderItem, FlatList } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Alert, FlatList, ListRenderItem } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 import { SafeAreaView, Separator } from '../../template/styles';
-import { CategoriaDTO } from '../../models/categoria.dto';
+import { CompraDTO } from '../../models/compra.dto';
 import { UseService } from '../../hooks/serviceProvider';
-import Card from '../../components/Card';
-import { ApiError } from '../../exceptions/exceptions';
 import { errorToast } from '../../utils/toasts';
+import { ApiError } from '../../exceptions/exceptions';
+import { PageCompra } from '../../models/page';
+import ItemPurchased from '../../components/ItemPurchased';
 import Loader from '../../components/Loader';
-import CartButton from '../../components/CartButton';
 
-const renderItem: ListRenderItem<CategoriaDTO> = ({ item }) => (
-  <Card item={item} page="Products" />
+const renderItem: ListRenderItem<CompraDTO> = ({ item }) => (
+  <ItemPurchased purchase={item} />
 );
 
-const Categories = (): React.ReactElement => {
-  const { findAllCategories } = UseService();
-  const [categories, setCategories] = useState<CategoriaDTO[] | null>([]);
+const Purchases = (): React.ReactElement => {
+  const { getPurchases } = UseService();
+  const [purchases, setPurchases] = useState<CompraDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const isMounted = useRef<boolean>(true);
+  const page = useRef<number>(0);
+  const last = useRef<boolean>(false);
 
   useEffect(() => {
-    getCategories();
+    getPurchasesData();
 
     return () => {
       isMounted.current = false;
@@ -32,19 +33,21 @@ const Categories = (): React.ReactElement => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getCategories = async (): Promise<void> => {
+  const getPurchasesData = async (): Promise<void> => {
     if (!isMounted.current) {
       return;
     }
     setRefreshing(true);
 
     try {
-      const list: CategoriaDTO[] = await findAllCategories();
+      const list: PageCompra = await getPurchases();
 
       if (!isMounted.current) {
         return;
       }
-      setCategories(list);
+      setPurchases([...purchases, ...list.content]);
+      last.current = list.last;
+      page.current++;
     } catch (err) {
       if (err instanceof ApiError) {
         Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
@@ -52,7 +55,7 @@ const Categories = (): React.ReactElement => {
         errorToast('Erro de conexão');
       }
 
-      console.log('getCategories: ', err);
+      console.log('getPurchasesData: ', err);
     } finally {
       if (!isMounted.current) {
         return;
@@ -75,7 +78,7 @@ const Categories = (): React.ReactElement => {
           <Loader />
         ) : (
           <FlatList
-            data={categories}
+            data={purchases}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
             contentContainerStyle={{
@@ -84,14 +87,13 @@ const Categories = (): React.ReactElement => {
             }}
             ItemSeparatorComponent={Separator}
             refreshing={refreshing}
-            onRefresh={getCategories}
+            onRefresh={getPurchasesData}
           />
         )}
-        <CartButton />
       </SafeAreaView>
       <Toast />
     </>
   );
 };
 
-export default Categories;
+export default Purchases;

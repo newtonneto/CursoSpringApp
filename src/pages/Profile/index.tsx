@@ -295,47 +295,50 @@ const Profile = (): React.ReactElement => {
                 }}
                 disabled={true}
               />
-              {user.enderecos.map((item: EnderecoDTO, index: number) => (
-                <View key={index} style={{ width: '100%' }}>
-                  <Section
-                    onPress={() => handleExpanse(index)}
-                    style={{
-                      borderBottomLeftRadius:
-                        addressAccordion === index ? 0 : 8,
-                      borderBottomRightRadius:
-                        addressAccordion === index ? 0 : 8,
-                    }}>
-                    <MaterialCommunityIcons
-                      name="home"
-                      color={colors.background}
-                      size={20}
-                    />
-                    <SectionTitle>Endereço {index + 1}</SectionTitle>
-                  </Section>
-                  <Collapsible
-                    collapsed={addressAccordion === index ? false : true}>
-                    <SectionContent
+              {user.enderecos.map(
+                (item: EnderecoDTO, index: number): React.ReactElement => (
+                  <View key={index} style={{ width: '100%' }}>
+                    <Section
+                      onPress={() => handleExpanse(index)}
                       style={{
-                        borderTopLeftRadius: addressAccordion === index ? 0 : 8,
-                        borderTopRightRadius:
+                        borderBottomLeftRadius:
+                          addressAccordion === index ? 0 : 8,
+                        borderBottomRightRadius:
                           addressAccordion === index ? 0 : 8,
                       }}>
-                      <SectionItem>
-                        {item.logradouro}, {item.numero}
-                      </SectionItem>
-                      {item.complemento && (
-                        <SectionItem>{item.complemento}</SectionItem>
-                      )}
-                      <SectionItem>
-                        {item.bairro}, {item.cep}
-                      </SectionItem>
-                      <SectionItem>
-                        {item.cidade.nome}, {item.cidade.estado?.nome}
-                      </SectionItem>
-                    </SectionContent>
-                  </Collapsible>
-                </View>
-              ))}
+                      <MaterialCommunityIcons
+                        name="home"
+                        color={colors.background}
+                        size={20}
+                      />
+                      <SectionTitle>Endereço {index + 1}</SectionTitle>
+                    </Section>
+                    <Collapsible
+                      collapsed={addressAccordion === index ? false : true}>
+                      <SectionContent
+                        style={{
+                          borderTopLeftRadius:
+                            addressAccordion === index ? 0 : 8,
+                          borderTopRightRadius:
+                            addressAccordion === index ? 0 : 8,
+                        }}>
+                        <SectionItem>
+                          {item.logradouro}, {item.numero}
+                        </SectionItem>
+                        {item.complemento && (
+                          <SectionItem>{item.complemento}</SectionItem>
+                        )}
+                        <SectionItem>
+                          {item.bairro}, {item.cep}
+                        </SectionItem>
+                        <SectionItem>
+                          {item.cidade.nome}, {item.cidade.estado?.nome}
+                        </SectionItem>
+                      </SectionContent>
+                    </Collapsible>
+                  </View>
+                ),
+              )}
               <Separator />
               <View style={{ width: '100%' }}>
                 <Section
@@ -357,9 +360,11 @@ const Profile = (): React.ReactElement => {
                       borderTopLeftRadius: phoneAccordion === true ? 0 : 8,
                       borderTopRightRadius: phoneAccordion === true ? 0 : 8,
                     }}>
-                    {user.telefones.map((item: string, index: number) => (
-                      <SectionItem key={index}>{item}</SectionItem>
-                    ))}
+                    {user.telefones.map(
+                      (item: string, index: number): React.ReactElement => (
+                        <SectionItem key={index}>{item}</SectionItem>
+                      ),
+                    )}
                   </SectionContent>
                 </Collapsible>
               </View>

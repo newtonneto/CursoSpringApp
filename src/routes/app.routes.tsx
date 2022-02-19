@@ -9,7 +9,7 @@ import {
 } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Home from '../pages/Home';
+import Purchases from '../pages/Purchases';
 import Categories from '../pages/Categories';
 import Products from '../pages/Products';
 import Product from '../pages/Product';
@@ -85,7 +85,7 @@ const AppRoutes = () => {
           </DrawerContentScrollView>
         );
       }}>
-      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Minhas Compras" component={Purchases} />
       <Drawer.Screen name="Shopping" component={ShoppingStack} />
       <Drawer.Screen name="Carrinho" component={CartStack} />
       <Drawer.Screen name="Perfil" component={Profile} />

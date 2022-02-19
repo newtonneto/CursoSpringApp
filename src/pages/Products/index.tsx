@@ -18,7 +18,7 @@ import { errorToast } from '../../utils/toasts';
 import { ApiError } from '../../exceptions/exceptions';
 import { RootStackParamList } from '../../routes/app.routes';
 import CartButton from '../../components/CartButton';
-import { Page } from '../../models/page';
+import { PageProduto } from '../../models/page';
 import colors from '../../template/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Products'>;
@@ -48,7 +48,7 @@ const Products = ({ route }: Props): React.ReactElement => {
 
   const getProducts = async (): Promise<void> => {
     try {
-      const list: Page = await findProductsByCategory(
+      const list: PageProduto = await findProductsByCategory(
         route.params.id,
         page.current,
       );
