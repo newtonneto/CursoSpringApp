@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 import { CompraDTO, ItemCompra } from '../../models/compra.dto';
 
@@ -9,8 +10,13 @@ type Props = {
 };
 
 const ItemPurchased = ({ purchase }: Props): React.ReactElement => {
+  const navigation = useNavigation();
+
   return (
     <ListItem
+      onPress={() =>
+        navigation.navigate('Purchase', { purchase_id: purchase.id })
+      }
       hasTVPreferredFocus={undefined}
       tvParallaxProperties={undefined}
       containerStyle={{ flex: 1, borderRadius: 8 }}>
@@ -26,6 +32,9 @@ const ItemPurchased = ({ purchase }: Props): React.ReactElement => {
             </View>
           ),
         )}
+        <ListItem.Subtitle style={{ marginTop: 8 }}>
+          Total: {purchase.valorTotal}
+        </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
   );

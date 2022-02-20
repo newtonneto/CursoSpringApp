@@ -19,6 +19,7 @@ import { PageProduto, PageCompra } from '../models/page';
 import { ApiError } from '../exceptions/exceptions';
 import { PedidoDTO } from '../models/pedido.dto';
 import getFilename from '../utils/getFilename';
+import { CompraDTO } from '../models/compra.dto';
 
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
@@ -41,6 +42,7 @@ type ReturnContext = {
   sessionLoading: boolean;
   uploadAvatar: Function;
   getPurchases: Function;
+  getPurchase: Function;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -255,6 +257,16 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const getPurchase = async (id: number): Promise<CompraDTO> => {
+    try {
+      const { data } = await api.get<CompraDTO>(`pedidos/${id}`);
+
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -269,6 +281,7 @@ const ServiceProvider = ({ children }: Props) => {
         sessionLoading,
         uploadAvatar,
         getPurchases,
+        getPurchase,
       }}>
       {children}
     </ServiceContext.Provider>

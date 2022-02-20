@@ -10,6 +10,7 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Purchases from '../pages/Purchases';
+import Purchase from '../pages/Purchase';
 import Categories from '../pages/Categories';
 import Products from '../pages/Products';
 import Product from '../pages/Product';
@@ -22,6 +23,8 @@ import colors from '../template/colors';
 import { EnderecoDTO } from '../models/endereco.dto';
 
 export type RootStackParamList = {
+  Purchases: undefined;
+  Purchase: { purchase_id: number };
   Categories: undefined;
   Products: { id: number };
   Product: { id: number };
@@ -34,6 +37,15 @@ export type RootStackParamList = {
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const PurchasesStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Purchases" component={Purchases} />
+      <Stack.Screen name="Purchase" component={Purchase} />
+    </Stack.Navigator>
+  );
+};
 
 const CartStack = () => {
   return (
@@ -85,7 +97,7 @@ const AppRoutes = () => {
           </DrawerContentScrollView>
         );
       }}>
-      <Drawer.Screen name="Minhas Compras" component={Purchases} />
+      <Drawer.Screen name="Minhas Compras" component={PurchasesStack} />
       <Drawer.Screen name="Shopping" component={ShoppingStack} />
       <Drawer.Screen name="Carrinho" component={CartStack} />
       <Drawer.Screen name="Perfil" component={Profile} />
