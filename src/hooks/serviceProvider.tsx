@@ -45,10 +45,15 @@ type ReturnContext = {
   getPurchases: Function;
   getPurchase: Function;
   updateClient: Function;
+  resetClientPassword: Function;
 };
 
 type FormUpdate = {
   nome: string;
+  email: string;
+};
+
+type FormReset = {
   email: string;
 };
 
@@ -285,6 +290,14 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const resetClientPassword = async (form: FormReset): Promise<void> => {
+    try {
+      await api.post('auth/forgot', form);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -301,6 +314,7 @@ const ServiceProvider = ({ children }: Props) => {
         getPurchases,
         getPurchase,
         updateClient,
+        resetClientPassword,
       }}>
       {children}
     </ServiceContext.Provider>

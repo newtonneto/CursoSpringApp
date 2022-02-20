@@ -169,6 +169,7 @@ const SignIn = ({ navigation }: Props): React.ReactElement => {
             marginVertical: 0,
             marginBottom: 16,
           }}
+          onPress={() => navigation.navigate('ResetPassword')}
         />
         <Button
           title="REGISTRAR"

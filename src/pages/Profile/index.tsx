@@ -57,9 +57,9 @@ const Profile = (): React.ReactElement => {
   const [cameraVisible, setCameraVisible] = useState<boolean>(false);
   const [photo, setPhoto] = useState<string>('');
   const [camera, setCamera] = useState<RNCamera>();
-  const isMounted = useRef<boolean>(true);
   const [addressAccordion, setAddressAccordion] = useState<number>(-1);
   const [phoneAccordion, setPhoneAccordion] = useState<boolean>(false);
+  const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
     getUserData();
