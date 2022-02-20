@@ -9,7 +9,7 @@ import { cpf, cnpj } from 'cpf-cnpj-validator';
 import { Picker } from '@react-native-picker/picker';
 
 import { ErrorView, ErrorText } from './styles';
-import { SafeAreaView, ScrollView } from '../../template/styles';
+import { SafeAreaView, ScrollView, Separator } from '../../template/styles';
 import colors from '../../template/colors';
 import cep from '../../service/viacep';
 import { ViaCep } from '../../models/viacep.dto';
@@ -591,6 +591,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                   </>
                 )}
               />
+              <Separator />
               <Button
                 title="CADASTRAR"
                 loading={loading}
