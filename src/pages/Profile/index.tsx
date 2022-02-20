@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ActivityIndicator, Alert, Modal, View } from 'react-native';
 import axios from 'axios';
 import { Avatar, Text, Button, Input } from 'react-native-elements';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import Toast from 'react-native-toast-message';
 import Collapsible from 'react-native-collapsible';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import {
   AvatarContainer,
@@ -35,9 +37,20 @@ interface FormData {
   email: string;
 }
 
+const schema: yup.SchemaOf<FormData> = yup.object().shape({
+  name: yup.string().required('Prenchimento obrigatorio'),
+  email: yup
+    .string()
+    .required('Prenchimento obrigatorio')
+    .email('Email inválido'),
+});
+
 const Profile = (): React.ReactElement => {
   const { getUserByEmail, uploadAvatar } = UseService();
-  const { register, setValue, handleSubmit } = useForm<FormData>();
+  const { handleSubmit, control, errors } = useForm<FormData>({
+    criteriaMode: 'all',
+    resolver: yupResolver(schema),
+  });
   const [user, setUser] = useState<ClienteDTO>({} as ClienteDTO);
   const [loading, setLoading] = useState<boolean>(true);
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
@@ -49,9 +62,6 @@ const Profile = (): React.ReactElement => {
   const [phoneAccordion, setPhoneAccordion] = useState<boolean>(false);
 
   useEffect(() => {
-    register('name', { required: true });
-    register('email', { required: true });
-
     const getUserData = async (): Promise<void> => {
       try {
         const data: ClienteDTO = await getUserByEmail();
@@ -188,9 +198,9 @@ const Profile = (): React.ReactElement => {
     );
   };
 
-  // const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
-  //   console.log('formData: ', formData);
-  // };
+  const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
+    console.log('formData: ', formData);
+  };
 
   const handleExpanse = (index: number): void => {
     if (index === addressAccordion) {
@@ -206,7 +216,9 @@ const Profile = (): React.ReactElement => {
         style={{
           elevation: -1,
         }}>
-        <ScrollView>
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps="always">
           {loading ? (
             <Loader />
           ) : (
@@ -254,32 +266,53 @@ const Profile = (): React.ReactElement => {
                   </Text>
                 </TitleContainer>
               </AvatarContainer>
-              <Input
+              <Controller
+                name="name"
                 defaultValue={user.nome}
-                placeholder="name"
-                autoCompleteType="name"
-                onChangeText={(text: any) => setValue('name', text)}
-                placeholderTextColor={colors.text}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                containerStyle={{
-                  marginHorizontal: 0,
-                  paddingHorizontal: 0,
-                }}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Nome Completo*"
+                    autoCompleteType="name"
+                    autoCorrect={false}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    errorMessage={errors.name && errors.name.message}
+                    errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
+                  />
+                )}
               />
-              <Input
+              <Controller
+                name="email"
                 defaultValue={user.email}
-                placeholder="email"
-                autoCompleteType="email"
-                onChangeText={(text: any) => setValue('email', text)}
-                placeholderTextColor={colors.text}
-                selectionColor={colors.text}
-                inputStyle={{ color: colors.text }}
-                autoCapitalize="none"
-                containerStyle={{
-                  marginHorizontal: 0,
-                  paddingHorizontal: 0,
-                }}
+                control={control}
+                render={({ onChange, value }): any => (
+                  <Input
+                    placeholder="Email*"
+                    autoCompleteType="email"
+                    autoCorrect={false}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholderTextColor={colors.disabled}
+                    selectionColor={colors.text}
+                    inputStyle={{ color: colors.text }}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    errorMessage={errors.email && errors.email.message}
+                    errorStyle={{ color: colors.danger }}
+                    containerStyle={{
+                      marginHorizontal: 0,
+                      paddingHorizontal: 0,
+                    }}
+                  />
+                )}
               />
               <Input
                 defaultValue={user.cpfOuCnpj}
@@ -336,10 +369,10 @@ const Profile = (): React.ReactElement => {
                         </SectionItem>
                       </SectionContent>
                     </Collapsible>
+                    <Separator />
                   </View>
                 ),
               )}
-              <Separator />
               <View style={{ width: '100%' }}>
                 <Section
                   onPress={() => setPhoneAccordion(!phoneAccordion)}
@@ -369,7 +402,7 @@ const Profile = (): React.ReactElement => {
                 </Collapsible>
               </View>
               <Separator />
-              {/* <Button
+              <Button
                 title="ATUALIZAR"
                 loading={loading}
                 disabled={loading}
@@ -384,7 +417,7 @@ const Profile = (): React.ReactElement => {
                   marginVertical: 0,
                 }}
                 onPress={handleSubmit(onSubmit)}
-              /> */}
+              />
             </>
           )}
         </ScrollView>

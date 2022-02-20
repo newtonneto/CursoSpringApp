@@ -130,6 +130,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
     { id: 0, nome: 'Selecionar' },
   ]);
   const [cities, setCities] = useState<CidadeDTO[]>([]);
+  const [inputLock, setInputLock] = useState<boolean>(true);
   const isMounted = useRef<boolean>(true);
 
   useEffect(() => {
@@ -242,8 +243,25 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
         if (data?.erro) {
           errorToast('CEP inválido');
         } else {
-          setValue('street', data.logradouro);
-          setValue('district', data.bairro);
+          if (!data.logradouro || !data.bairro) {
+            if (!isMounted.current) {
+              return;
+            }
+            setInputLock(false);
+          } else {
+            if (!isMounted.current) {
+              return;
+            }
+            setInputLock(true);
+            if (!isMounted.current) {
+              return;
+            }
+            setValue('street', data.logradouro);
+            if (!isMounted.current) {
+              return;
+            }
+            setValue('district', data.bairro);
+          }
         }
       } catch (err) {
         errorToast('Erro de conexão');
@@ -452,7 +470,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     placeholderTextColor={colors.disabled}
                     selectionColor={colors.text}
                     inputStyle={{ color: colors.text }}
-                    disabled={true}
+                    disabled={inputLock}
                     errorMessage={errors.street && errors.street.message}
                     errorStyle={{ color: colors.danger }}
                     containerStyle={{
@@ -531,7 +549,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                     placeholderTextColor={colors.disabled}
                     selectionColor={colors.text}
                     inputStyle={{ color: colors.text }}
-                    disabled={true}
+                    disabled={inputLock}
                     errorMessage={errors.district && errors.district.message}
                     errorStyle={{ color: colors.danger }}
                     containerStyle={{
