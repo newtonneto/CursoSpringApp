@@ -206,6 +206,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
         logradouro: formData.street,
         numero: formData.number,
         complemento: formData.complement,
+        bairro: formData.district,
         cep: formData.zipCode,
         cidadeId: formData.city,
       };

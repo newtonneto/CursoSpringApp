@@ -9,6 +9,7 @@ import AppProvider from './hooks';
 const Index = (): JSX.Element => {
   LogBox.ignoreLogs([
     "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
+    'Received data was not a string, or was not a recognised encoding.',
   ]);
 
   return (
