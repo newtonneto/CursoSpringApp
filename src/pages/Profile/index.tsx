@@ -46,8 +46,8 @@ const schema: yup.SchemaOf<FormData> = yup.object().shape({
 });
 
 const Profile = (): React.ReactElement => {
-  const { getUserByEmail, uploadAvatar } = UseService();
-  const { handleSubmit, control, errors } = useForm<FormData>({
+  const { getUserByEmail, uploadAvatar, updateClient } = UseService();
+  const { handleSubmit, control, errors, reset } = useForm<FormData>({
     criteriaMode: 'all',
     resolver: yupResolver(schema),
   });
@@ -62,32 +62,6 @@ const Profile = (): React.ReactElement => {
   const [phoneAccordion, setPhoneAccordion] = useState<boolean>(false);
 
   useEffect(() => {
-    const getUserData = async (): Promise<void> => {
-      try {
-        const data: ClienteDTO = await getUserByEmail();
-
-        if (!isMounted.current) {
-          return;
-        }
-        setUser(data);
-
-        await getUserImage(data.id);
-      } catch (err) {
-        if (err instanceof ApiError) {
-          Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
-        } else {
-          errorToast('Erro de conexão');
-        }
-
-        console.log('getUserData: ', err);
-      } finally {
-        if (!isMounted.current) {
-          return;
-        }
-        setLoading(false);
-      }
-    };
-
     getUserData();
 
     return () => {
@@ -102,6 +76,32 @@ const Profile = (): React.ReactElement => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photo]);
+
+  const getUserData = async (): Promise<void> => {
+    try {
+      const data: ClienteDTO = await getUserByEmail();
+
+      if (!isMounted.current) {
+        return;
+      }
+      setUser(data);
+
+      await getUserImage(data.id);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
+
+      console.log('getUserData: ', err);
+    } finally {
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
+    }
+  };
 
   const submitAvatar = async (): Promise<void> => {
     if (!isMounted.current) {
@@ -199,7 +199,37 @@ const Profile = (): React.ReactElement => {
   };
 
   const onSubmit: SubmitHandler<FormData> = async (formData): Promise<void> => {
-    console.log('formData: ', formData);
+    if (!isMounted.current) {
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const payload = {
+        nome: formData.name,
+        email: formData.email,
+      };
+
+      await updateClient(user.id, payload);
+
+      successToast('Cliente atualizado com sucesso');
+
+      await getUserData();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        Alert.alert(':(', `[${err.error.status}]: ${err.error.message}`);
+      } else {
+        errorToast('Erro de conexão');
+      }
+
+      reset(formData);
+      console.log('onSubmit: ', err);
+
+      if (!isMounted.current) {
+        return;
+      }
+      setLoading(false);
+    }
   };
 
   const handleExpanse = (index: number): void => {

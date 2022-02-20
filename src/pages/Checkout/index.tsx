@@ -76,7 +76,10 @@ const Checkout = ({ route, navigation }: Props): React.ReactElement => {
         {
           text: 'OK',
           onPress: () =>
-            navigation.navigate('ShoppingStack', { screen: 'Categories' }),
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'ShoppingStack' }],
+            }),
         },
       ]);
     } catch (err) {

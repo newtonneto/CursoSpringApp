@@ -24,6 +24,7 @@ import { CompraDTO } from '../models/compra.dto';
 interface ApiHandler {
   get<T>(url: string): Promise<AxiosResponse<T>>;
   post<T, U>(url: string, payload: T): Promise<AxiosResponse<U>>;
+  put<T, U>(url: string, payload: T): Promise<AxiosResponse<U>>;
 }
 
 type Props = {
@@ -43,6 +44,12 @@ type ReturnContext = {
   uploadAvatar: Function;
   getPurchases: Function;
   getPurchase: Function;
+  updateClient: Function;
+};
+
+type FormUpdate = {
+  nome: string;
+  email: string;
 };
 
 const ServiceContext = createContext<ReturnContext | undefined>(undefined);
@@ -93,6 +100,9 @@ const ServiceProvider = ({ children }: Props) => {
     },
     post: async (url, payload) => {
       return client.post(url, payload);
+    },
+    put: async (url, payload) => {
+      return client.put(url, payload);
     },
   };
 
@@ -267,6 +277,14 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
+  const updateClient = async (id: number, form: FormUpdate): Promise<void> => {
+    try {
+      await api.put(`clientes/${id}`, form);
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return (
     <ServiceContext.Provider
       value={{
@@ -282,6 +300,7 @@ const ServiceProvider = ({ children }: Props) => {
         uploadAvatar,
         getPurchases,
         getPurchase,
+        updateClient,
       }}>
       {children}
     </ServiceContext.Provider>
@@ -299,19 +318,3 @@ const UseService = () => {
 };
 
 export { ServiceProvider, UseService };
-
-// await fetch(`http://localhost:8080/clientes/picture`, {
-//   method: 'POST',
-//   body: form_data,
-//   headers: {
-//     Authorization: `Bearer ${token}`,
-//   },
-// })
-//   .then(response => {
-//     console.log('response', response);
-//   })
-//   .catch(error => {
-//     console.log('error', error);
-//   });
-
-// await api.post('clientes/picture', form_data);
