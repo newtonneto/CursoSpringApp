@@ -119,9 +119,11 @@ const Checkout = ({ route, navigation }: Props): React.ReactElement => {
               <Text>
                 {route.params.address.logradouro}, {route.params.address.numero}
               </Text>
-              {route.params.address.complemento && (
-                <Text>{route.params.address.complemento}</Text>
-              )}
+              {route.params.address.complemento !== '' &&
+                route.params.address.complemento !== null &&
+                route.params.address.complemento !== undefined && (
+                  <Text>{route.params.address.complemento}</Text>
+                )}
               <Text>
                 {route.params.address.bairro}, {route.params.address.cep}
               </Text>

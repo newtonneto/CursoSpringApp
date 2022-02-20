@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FlatList, Alert, ListRenderItem, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Text } from 'react-native-elements';
+import { Text, ListItem } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 
 import { SafeAreaView, Separator } from '../../template/styles';
@@ -71,6 +71,41 @@ const Purchase = ({ route }: Props): React.ReactElement => {
     </View>
   );
 
+  const footerComponent = (): React.ReactElement => (
+    <View style={{ flex: 1 }}>
+      <Separator />
+      <ListItem
+        hasTVPreferredFocus={undefined}
+        tvParallaxProperties={undefined}
+        containerStyle={{
+          borderRadius: 8,
+          flex: 1,
+        }}>
+        <ListItem.Content>
+          <ListItem.Title>
+            {purchasedItems.enderecoDeEntrega.logradouro},{' '}
+            {purchasedItems.enderecoDeEntrega.numero}
+          </ListItem.Title>
+          {purchasedItems.enderecoDeEntrega.complemento !== '' &&
+            purchasedItems.enderecoDeEntrega.complemento !== null &&
+            purchasedItems.enderecoDeEntrega.complemento !== undefined && (
+              <ListItem.Subtitle>
+                {purchasedItems.enderecoDeEntrega.complemento}
+              </ListItem.Subtitle>
+            )}
+          <ListItem.Subtitle>
+            {purchasedItems.enderecoDeEntrega.bairro},{' '}
+            {purchasedItems.enderecoDeEntrega.cep}
+          </ListItem.Subtitle>
+          <ListItem.Subtitle>
+            {purchasedItems.enderecoDeEntrega.cidade.nome} -{' '}
+            {purchasedItems.enderecoDeEntrega.cidade.estado?.nome}
+          </ListItem.Subtitle>
+        </ListItem.Content>
+      </ListItem>
+    </View>
+  );
+
   return (
     <>
       <SafeAreaView
@@ -90,6 +125,7 @@ const Purchase = ({ route }: Props): React.ReactElement => {
             }}
             ItemSeparatorComponent={Separator}
             ListHeaderComponent={headerComponent}
+            ListFooterComponent={footerComponent}
           />
         )}
       </SafeAreaView>

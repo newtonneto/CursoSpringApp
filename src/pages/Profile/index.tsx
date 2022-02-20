@@ -84,6 +84,7 @@ const Profile = (): React.ReactElement => {
       if (!isMounted.current) {
         return;
       }
+      console.log('data: ', data);
       setUser(data);
 
       await getUserImage(data.id);
@@ -388,9 +389,11 @@ const Profile = (): React.ReactElement => {
                         <SectionItem>
                           {item.logradouro}, {item.numero}
                         </SectionItem>
-                        {item.complemento && (
-                          <SectionItem>{item.complemento}</SectionItem>
-                        )}
+                        {item.complemento !== '' &&
+                          item.complemento !== null &&
+                          item.complemento !== undefined && (
+                            <SectionItem>{item.complemento}</SectionItem>
+                          )}
                         <SectionItem>
                           {item.bairro}, {item.cep}
                         </SectionItem>

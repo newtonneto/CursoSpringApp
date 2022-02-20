@@ -28,9 +28,11 @@ const Address = ({ item, client_id }: Props): React.ReactElement => {
         <ListItem.Title>
           {item.logradouro}, {item.numero}
         </ListItem.Title>
-        {item.complemento && (
-          <ListItem.Subtitle>{item.complemento}</ListItem.Subtitle>
-        )}
+        {item.complemento !== '' &&
+          item.complemento !== null &&
+          item.complemento !== undefined && (
+            <ListItem.Subtitle>{item.complemento}</ListItem.Subtitle>
+          )}
         <ListItem.Subtitle>
           {item.bairro}, {item.cep}
         </ListItem.Subtitle>
