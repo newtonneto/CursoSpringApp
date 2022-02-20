@@ -40,6 +40,11 @@ type FormData = {
   city: number;
 };
 
+type ControllerProps = {
+  onChange: (text: string) => void;
+  value: string;
+};
+
 const schema: yup.SchemaOf<FormData> = yup.object().shape({
   name: yup.string().required('Prenchimento obrigatorio'),
   email: yup
@@ -295,7 +300,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="name"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Nome Completo*"
                     autoCompleteType="name"
@@ -318,7 +326,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="email"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Email*"
                     autoCompleteType="email"
@@ -343,7 +354,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="password"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Senha*"
                     autoCompleteType="password"
@@ -368,7 +382,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="passwordConfirmation"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Confirmação da Senha*"
                     autoCompleteType="password"
@@ -396,7 +413,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="cpfOrCnpj"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="CPF ou CNPJ*"
                     autoCompleteType="off"
@@ -420,7 +440,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="phone"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Telefone*"
                     autoCompleteType="off"
@@ -444,7 +467,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="zipCode"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="CEP*"
                     autoCompleteType="postal-code"
@@ -469,7 +495,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="street"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Logradouro"
                     autoCompleteType="off"
@@ -493,7 +522,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="number"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Número*"
                     autoCompleteType="off"
@@ -517,7 +549,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="complement"
                 defaultValue={''}
                 control={control}
-                render={({ onChange, value }): any => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Complemento"
                     autoCompleteType="off"
@@ -545,10 +580,7 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 render={({
                   onChange,
                   value,
-                }: {
-                  onChange: any;
-                  value: string;
-                }): any => (
+                }: ControllerProps): React.ReactElement => (
                   <Input
                     placeholder="Bairro"
                     autoCompleteType="off"
@@ -572,7 +604,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="state"
                 defaultValue={0}
                 control={control}
-                render={({ onChange, value }) => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <>
                     <Picker
                       selectedValue={value}
@@ -599,7 +634,10 @@ const SignUp = ({ navigation }: Props): React.ReactElement => {
                 name="city"
                 defaultValue={0}
                 control={control}
-                render={({ onChange, value }) => (
+                render={({
+                  onChange,
+                  value,
+                }: ControllerProps): React.ReactElement => (
                   <>
                     <Picker
                       selectedValue={value}

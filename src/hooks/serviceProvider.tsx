@@ -48,6 +48,21 @@ type ReturnContext = {
   resetClientPassword: Function;
 };
 
+type FormCreate = {
+  nome: string;
+  email: string;
+  senha: string;
+  cpfOuCnpj: string;
+  tipo: number;
+  telefone1: string;
+  logradouro: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cep: string;
+  cidadeId: number;
+};
+
 type FormUpdate = {
   nome: string;
   email: string;
@@ -198,7 +213,7 @@ const ServiceProvider = ({ children }: Props) => {
     }
   };
 
-  const createClient = async (form: any): Promise<void> => {
+  const createClient = async (form: FormCreate): Promise<void> => {
     try {
       await api.post('clientes', form);
     } catch (err) {
