@@ -49,11 +49,19 @@ const schema: yup.SchemaOf<FormData> = yup.object().shape({
   password: yup
     .string()
     .required('Prenchimento obrigatorio')
-    .min(8, 'A senha precisa ter ao menos 8 dígitos'),
+    .min(8, 'A senha precisa ter ao menos 8 dígitos')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      'A senha deve contem ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial',
+    ),
   passwordConfirmation: yup
     .string()
     .required('Prenchimento obrigatorio')
     .min(8, 'A senha precisa ter ao menos 8 dígitos')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      'A senha deve contem ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial',
+    )
     .oneOf([yup.ref('password')], 'Passwords does not match'),
   cpfOrCnpj: yup
     .string()
